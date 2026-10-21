@@ -18,7 +18,14 @@ An AI/ML research project for behavioural pattern analysis, productivity estimat
   - Leakage-safe feature engineering (task completion, session utilization, 7-day lagged rolling metrics).
   - Strict chronological train/validation/test splitting (70% / 15% / 15%) without date overlap.
   - Preprocessing pipeline with training-fitted median imputation, IQR outlier clipping, and StandardScaler.
-  - Complete command-line interface (`app.data_pipeline.cli`) and full test coverage (52 tests).
+- **Milestone 3 (Completed):** Exploratory Data Analysis and Research-Grade Behavioural Clustering:
+  - Statistical profiling across 4,500 records and 50 users (univariate, bivariate, temporal, and user heterogeneity).
+  - Unsupervised feature selection strictly excluding targets (`productivity_score`), target-derived metrics, and identifiers.
+  - Experiment A: Daily Behavioural Pattern Clustering ($N = 4,500$, candidate $k=2..8$; metric-optimal baseline $k=2$ with silhouette 0.1942, exploratory 3-state operational model $k=3$ with silhouette 0.1600 and mean ARI 1.0000).
+  - Experiment B: User-Level Behavioural Profile Clustering ($N = 50$, candidate $k=2..6$; recommended primary model $k=2$ with silhouette 0.2997 and mean ARI 1.0000; exploratory candidate $k=3$ with silhouette 0.2170 and mean ARI 0.7910).
+  - Neutral cluster profiling in original physical units (no clinical or psychological diagnostic claims).
+  - Multi-seed stability analysis and publication-quality visualization exports.
+  - Full automated test suite (74 passing tests).
 
 ---
 
@@ -57,7 +64,7 @@ Copy-Item .env.example .env
 
 ## Run Tests
 
-Run the full automated test suite (52 tests):
+Run the full automated test suite (74 tests):
 
 ```powershell
 python -m pytest -v
@@ -65,7 +72,7 @@ python -m pytest -v
 
 ---
 
-## Data Pipeline CLI Usage
+## Data Pipeline CLI Usage (Milestone 2)
 
 The data engineering pipeline provides an integrated CLI for data generation, validation, and end-to-end preprocessing:
 
@@ -75,11 +82,6 @@ The data engineering pipeline provides an integrated CLI for data generation, va
 python -m app.data_pipeline.cli generate --users 50 --days 90 --seed 42 --output data/synthetic/behavioral_records.csv --overwrite
 ```
 
-Supported scenarios:
-- `--scenario baseline` (default): Standard behavioural distribution.
-- `--scenario stress_spike`: Elevated interruptions and stress levels in the final 30% of days.
-- `--scenario focus_drop`: Reduced focus duration and increased screen time in the final 30% of days.
-
 ### 2. Validate Dataset and View Quality Report
 
 ```powershell
@@ -88,20 +90,33 @@ python -m app.data_pipeline.cli validate --input data/synthetic/behavioral_recor
 
 ### 3. Run End-to-End Pipeline
 
-Executes generation, validation, feature engineering, chronological splitting, and preprocessing in a single command:
-
 ```powershell
 python -m app.data_pipeline.cli run-all --users 50 --days 90 --seed 42 --output-dir data --overwrite
 ```
 
-This exports:
-- `data/synthetic/behavioral_records.csv` + metadata sidecar
-- `data/processed/train_features.csv`, `train_target.csv`, `train_metadata.csv`
-- `data/processed/val_features.csv`, `val_target.csv`, `val_metadata.csv`
-- `data/processed/test_features.csv`, `test_target.csv`, `test_metadata.csv`
-- `data/processed/preprocessing_parameters.json`
-- `data/processed/data_split_report.json`
-- `data/processed/data_quality_report.json`
+---
+
+## EDA & Behavioural Clustering (Milestone 3)
+
+Execute the complete EDA, feature selection, daily clustering, and user-level clustering workflow:
+
+```powershell
+python scripts/run_milestone3.py --users 50 --days 90 --seed 42
+```
+
+This generates:
+- Research Reports:
+  - `research/experiments/milestone3/eda_report.md`
+  - `research/experiments/milestone3/feature_selection.md`
+  - `research/experiments/milestone3/clustering_report.md`
+  - `research/experiments/milestone3/experiment_metadata.json`
+- Visualization Charts (`research/experiments/milestone3/results/`):
+  - `feature_distributions.png`, `correlation_matrix.png`, `missingness_overview.png`, `temporal_trends.png`, `user_heterogeneity.png`
+  - `daily_elbow_and_silhouette.png`, `daily_pca_clusters_k2.png`, `daily_pca_clusters_k3.png`
+  - `user_elbow_and_silhouette.png`, `user_pca_clusters_k2.png`, `user_pca_clusters_k3.png`
+- Trained Model Artifacts:
+  - `artifacts/daily_kmeans_k2.joblib`, `artifacts/daily_kmeans_k3.joblib`
+  - `artifacts/user_kmeans_k2.joblib`, `artifacts/user_kmeans_k3.joblib`
 
 ---
 
@@ -123,6 +138,9 @@ Detailed experimental documentation is located in `research/experiments/`:
 - [Data Dictionary](file:///research/experiments/data_dictionary.md): Field definitions, data types, valid ranges, nullability, and leakage roles.
 - [Dataset Provenance](file:///research/experiments/dataset_provenance.md): Simulation parameters, heuristic formulas, missingness mechanisms, and scientific limitations.
 - [Experiment Protocol](file:///research/experiments/experiment_protocol.md): Experimental baseline parameters, chronological split protocols, and reproducibility standards.
+- [EDA Report](file:///research/experiments/milestone3/eda_report.md): Statistical profiling, correlation matrices, and heterogeneity metrics.
+- [Feature Selection Rationale](file:///research/experiments/milestone3/feature_selection.md): Unsupervised feature configurations and exclusion justifications.
+- [Clustering Report](file:///research/experiments/milestone3/clustering_report.md): Candidate $k$ evaluation, unscaled cluster profiles, stability audits, and responsible AI limitations.
 
 > **Statement of Academic Integrity:**
-> Synthetic experiments, real observations, predictions, and causal claims are documented and reported separately. Performance metrics obtained on synthetic datasets demonstrate pipeline correctness and rule recovery, not validated human psychology.
+> Synthetic experiments, real observations, predictions, and causal claims are documented and reported separately. Performance metrics obtained on synthetic datasets demonstrate pipeline correctness and rule recovery, not validated human psychology. Cluster assignments represent objective numerical groupings of behavioral proxies, never psychological or psychiatric diagnoses.

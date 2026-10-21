@@ -30,6 +30,7 @@ artifacts/
 *.pth
 *.pkl
 *.joblib
+research/experiments/*/results/
 
 # Logs and local databases
 *.log

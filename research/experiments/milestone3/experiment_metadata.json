@@ -1,0 +1,331 @@
+{
+  "milestone": "Milestone 3 \u2014 Exploratory Data Analysis & Behavioural Clustering",
+  "timestamp_utc": "2026-10-21T05:31:55.674954+00:00",
+  "python_version": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+  "seed": 42,
+  "dataset": {
+    "n_users": 50,
+    "n_days": 90,
+    "total_records": 4500
+  },
+  "experiment_a_daily": {
+    "features": [
+      "sleep_hours",
+      "focus_duration_hours",
+      "screen_time_hours",
+      "task_difficulty_avg",
+      "work_session_duration_hours",
+      "inactivity_duration_hours",
+      "interruption_count",
+      "task_completion_rate",
+      "work_session_utilization",
+      "inactivity_ratio"
+    ],
+    "candidate_k_evaluations": [
+      {
+        "k": 2,
+        "inertia": 35253.51,
+        "silhouette": 0.1942,
+        "davies_bouldin": 1.7928,
+        "calinski_harabasz": 1243.56,
+        "cluster_sizes": [
+          2752,
+          1748
+        ],
+        "cluster_proportions": [
+          61.16,
+          38.84
+        ],
+        "min_cluster_size": 1748,
+        "min_cluster_prop": 38.84
+      },
+      {
+        "k": 3,
+        "inertia": 30922.26,
+        "silhouette": 0.16,
+        "davies_bouldin": 1.8517,
+        "calinski_harabasz": 1023.66,
+        "cluster_sizes": [
+          1313,
+          1636,
+          1551
+        ],
+        "cluster_proportions": [
+          29.18,
+          36.36,
+          34.47
+        ],
+        "min_cluster_size": 1313,
+        "min_cluster_prop": 29.18
+      },
+      {
+        "k": 4,
+        "inertia": 28319.7,
+        "silhouette": 0.1429,
+        "davies_bouldin": 1.781,
+        "calinski_harabasz": 882.72,
+        "cluster_sizes": [
+          859,
+          1407,
+          973,
+          1261
+        ],
+        "cluster_proportions": [
+          19.09,
+          31.27,
+          21.62,
+          28.02
+        ],
+        "min_cluster_size": 859,
+        "min_cluster_prop": 19.09
+      },
+      {
+        "k": 5,
+        "inertia": 26885.01,
+        "silhouette": 0.1205,
+        "davies_bouldin": 1.9048,
+        "calinski_harabasz": 757.18,
+        "cluster_sizes": [
+          868,
+          826,
+          1265,
+          1010,
+          531
+        ],
+        "cluster_proportions": [
+          19.29,
+          18.36,
+          28.11,
+          22.44,
+          11.8
+        ],
+        "min_cluster_size": 531,
+        "min_cluster_prop": 11.8
+      },
+      {
+        "k": 6,
+        "inertia": 25613.42,
+        "silhouette": 0.1182,
+        "davies_bouldin": 1.9337,
+        "calinski_harabasz": 680.29,
+        "cluster_sizes": [
+          814,
+          770,
+          502,
+          962,
+          690,
+          762
+        ],
+        "cluster_proportions": [
+          18.09,
+          17.11,
+          11.16,
+          21.38,
+          15.33,
+          16.93
+        ],
+        "min_cluster_size": 502,
+        "min_cluster_prop": 11.16
+      },
+      {
+        "k": 7,
+        "inertia": 24684.6,
+        "silhouette": 0.1162,
+        "davies_bouldin": 1.9287,
+        "calinski_harabasz": 616.3,
+        "cluster_sizes": [
+          704,
+          694,
+          485,
+          794,
+          473,
+          715,
+          635
+        ],
+        "cluster_proportions": [
+          15.64,
+          15.42,
+          10.78,
+          17.64,
+          10.51,
+          15.89,
+          14.11
+        ],
+        "min_cluster_size": 473,
+        "min_cluster_prop": 10.51
+      },
+      {
+        "k": 8,
+        "inertia": 23884.19,
+        "silhouette": 0.1089,
+        "davies_bouldin": 1.9825,
+        "calinski_harabasz": 567.34,
+        "cluster_sizes": [
+          296,
+          544,
+          729,
+          580,
+          622,
+          617,
+          631,
+          481
+        ],
+        "cluster_proportions": [
+          6.58,
+          12.09,
+          16.2,
+          12.89,
+          13.82,
+          13.71,
+          14.02,
+          10.69
+        ],
+        "min_cluster_size": 296,
+        "min_cluster_prop": 6.58
+      }
+    ],
+    "metric_optimal_k2": {
+      "silhouette_score": 0.1941562924958361,
+      "davies_bouldin_score": 1.7927620205285455,
+      "stability_mean_ari": 0.9966,
+      "saved_model": "daily_kmeans_k2.joblib"
+    },
+    "exploratory_operational_k3": {
+      "silhouette_score": 0.16004855951487254,
+      "davies_bouldin_score": 1.8517247126301848,
+      "stability_mean_ari": 1.0,
+      "saved_model": "daily_kmeans_k3.joblib"
+    }
+  },
+  "experiment_b_user_level": {
+    "features": [
+      "mean_focus_hours",
+      "mean_sleep_hours",
+      "mean_screen_time_hours",
+      "mean_work_session_hours",
+      "mean_task_completion_rate",
+      "mean_interruption_count",
+      "focus_variability_std",
+      "work_session_consistency"
+    ],
+    "candidate_k_evaluations": [
+      {
+        "k": 2,
+        "inertia": 214.92,
+        "silhouette": 0.2997,
+        "davies_bouldin": 1.2057,
+        "calinski_harabasz": 30.17,
+        "cluster_sizes": [
+          24,
+          26
+        ],
+        "cluster_proportions": [
+          48.0,
+          52.0
+        ],
+        "min_cluster_size": 24,
+        "min_cluster_prop": 48.0
+      },
+      {
+        "k": 3,
+        "inertia": 177.37,
+        "silhouette": 0.217,
+        "davies_bouldin": 1.4294,
+        "calinski_harabasz": 22.87,
+        "cluster_sizes": [
+          19,
+          10,
+          21
+        ],
+        "cluster_proportions": [
+          38.0,
+          20.0,
+          42.0
+        ],
+        "min_cluster_size": 10,
+        "min_cluster_prop": 20.0
+      },
+      {
+        "k": 4,
+        "inertia": 145.33,
+        "silhouette": 0.2448,
+        "davies_bouldin": 1.2887,
+        "calinski_harabasz": 21.59,
+        "cluster_sizes": [
+          15,
+          13,
+          12,
+          10
+        ],
+        "cluster_proportions": [
+          30.0,
+          26.0,
+          24.0,
+          20.0
+        ],
+        "min_cluster_size": 10,
+        "min_cluster_prop": 20.0
+      },
+      {
+        "k": 5,
+        "inertia": 128.85,
+        "silhouette": 0.2249,
+        "davies_bouldin": 1.2175,
+        "calinski_harabasz": 19.31,
+        "cluster_sizes": [
+          11,
+          12,
+          9,
+          9,
+          9
+        ],
+        "cluster_proportions": [
+          22.0,
+          24.0,
+          18.0,
+          18.0,
+          18.0
+        ],
+        "min_cluster_size": 9,
+        "min_cluster_prop": 18.0
+      },
+      {
+        "k": 6,
+        "inertia": 111.28,
+        "silhouette": 0.2436,
+        "davies_bouldin": 1.1343,
+        "calinski_harabasz": 18.88,
+        "cluster_sizes": [
+          10,
+          6,
+          3,
+          9,
+          9,
+          13
+        ],
+        "cluster_proportions": [
+          20.0,
+          12.0,
+          6.0,
+          18.0,
+          18.0,
+          26.0
+        ],
+        "min_cluster_size": 3,
+        "min_cluster_prop": 6.0
+      }
+    ],
+    "primary_selected_k2": {
+      "silhouette_score": 0.2997140532298445,
+      "davies_bouldin_score": 1.205686741172566,
+      "stability_mean_ari": 1.0,
+      "saved_model": "user_kmeans_k2.joblib"
+    },
+    "exploratory_k3": {
+      "silhouette_score": 0.2170301102138062,
+      "davies_bouldin_score": 1.4294201358040164,
+      "stability_mean_ari": 0.791,
+      "saved_model": "user_kmeans_k3.joblib"
+    }
+  }
+}
