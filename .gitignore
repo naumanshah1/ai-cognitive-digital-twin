@@ -24,7 +24,7 @@ data/processed/*
 !data/processed/.gitkeep
 data/synthetic/*
 !data/synthetic/.gitkeep
-models/
+/models/
 artifacts/
 *.pt
 *.pth

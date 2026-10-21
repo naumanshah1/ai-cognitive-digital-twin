@@ -71,6 +71,14 @@ An AI/ML research project for behavioural pattern analysis, productivity estimat
   - Live Gemini Tool Calling Verified: passed live Gemini connectivity and LangGraph tool execution test in 6.66s without exposing credentials.
   - 14-scenario controlled evaluation suite achieving 100.0% benchmark pass rate.
   - Full automated test suite (177 passing tests).
+- **Milestone 9 (Completed):** FastAPI REST Backend and PostgreSQL Integration:
+  - Production-grade FastAPI service integrating the LangGraph-orchestrated Gemini agent with relational persistence and security controls.
+  - Relational Persistence: SQLAlchemy 2.x Declarative models for `users` and `agent_execution_records` with JSON telemetry storage and cascade relationships.
+  - Database Migrations: Versioned Alembic schema migrations (`001_initial_schema.py`) validated for both clean forward upgrades and rollbacks.
+  - Dual-Tier Health Monitoring: Strict architectural separation between service liveness (`GET /health`) and subsystem readiness (`GET /health/ready`), verifying database and ML readiness without exposing credentials or SQL tracebacks.
+  - Authentication & Authorization: Maintainable Bearer token / API-key dependencies with cryptographic key hashing and explicit caller-to-telemetry ownership verification.
+  - Security & Reliability: Cross-user data isolation, in-memory sliding-window request throttling (HTTP 429), safe error serialization, and non-clinical/non-causal guardrails.
+  - Full automated test suite (197 passing tests across all Milestones 1–9).
 
 ---
 
@@ -294,15 +302,64 @@ print("Trace Steps:", len(response.execution_trace))
 
 ---
 
-## Run the API
+---
+
+## Database Migrations & Backend API
+
+### 1. Database Setup & Migrations (PostgreSQL / Alembic)
+
+Ensure your database connection URL is configured in `.env` (e.g. `DATABASE_URL=postgresql+psycopg://postgres:your_password@localhost:5432/cognitive_twin`). Then apply migrations:
 
 ```powershell
-python -m uvicorn app.main:app --reload
+alembic upgrade head
 ```
 
-Open:
-- Health check: [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health)
-- Interactive API documentation: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+To rollback:
+```powershell
+alembic downgrade -1
+```
+
+### 2. Start the FastAPI Service
+
+```powershell
+python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+Open in your browser:
+- Liveness Probe: [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health)
+- Readiness Probe: [http://127.0.0.1:8000/health/ready](http://127.0.0.1:8000/health/ready)
+- Interactive OpenAPI Documentation: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+- ReDoc Documentation: [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+
+### 3. API Endpoints Overview
+
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :---: |
+| `GET` | `/health` | Immediate service liveness and running version | No |
+| `GET` | `/health/ready` | Subsystem readiness (database connectivity and ML pipeline) | No |
+| `POST` | `/api/v1/agent/run` | Executes LangGraph Gemini agentic evaluation | Bearer Token / API Key |
+| `GET` | `/api/v1/users/me` | Current authenticated principal profile and authorized scope | Bearer Token / API Key |
+| `GET` | `/api/v1/users/{user_id}` | Public profile for target user (ownership verified) | Bearer Token / API Key |
+| `GET` | `/api/v1/agent/history` | Paginated execution audit history for caller | Bearer Token / API Key |
+| `GET` | `/api/v1/agent/history/{request_id}` | Detailed execution record by request ID | Bearer Token / API Key |
+
+### 4. Example API Request (cURL)
+
+```bash
+curl -X POST "http://127.0.0.1:8000/api/v1/agent/run" \
+  -H "Authorization: Bearer dev-synthetic-00" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "goal": "Review behavioral drift and summarize operational recommendations",
+    "target_user_id": "synthetic_user_00"
+  }'
+```
+
+### 5. Run Backend & Integration Benchmarks
+
+```powershell
+python scripts/run_milestone9.py --seed 42
+```
 
 ---
 
@@ -320,6 +377,7 @@ Detailed experimental documentation is located in `research/experiments/`:
 - [Behavioural Drift Detection Report](file:///research/experiments/milestone6/behavioural_drift_report.md): Longitudinal per-user drift detection, multi-window causal isolation, Mann-Whitney U testing with FDR correction, controlled perturbation sensitivity, and return-to-baseline normalization.
 - [Recommendation & Simulation Report](file:///research/experiments/milestone7/recommendation_simulation_report.md): Evidence-based recommendation engine, multi-factor priority scoring, non-clinical safeguards, what-if counterfactual simulation, out-of-distribution detection, and non-causal research limitations.
 - [Agentic AI Framework Report](file:///research/experiments/milestone8/agent_framework_report.md): Autonomous agent architecture, LangGraph state machine workflow, Google Gemini integration, application-level policy enforcement, 14-scenario evaluation results, and ethical AI guardrails.
+- [Backend Architecture & PostgreSQL Integration Report](file:///research/experiments/milestone9/backend_integration_report.md): Production-grade FastAPI backend, PostgreSQL / SQLAlchemy 2.x persistence, Alembic migrations, dual-tier health probes, API authentication, and benchmark evaluation results.
 
 > **Statement of Academic Integrity:**
 > Synthetic experiments, real observations, predictions, and causal claims are documented and reported separately. Performance metrics obtained on synthetic datasets demonstrate pipeline correctness and rule recovery, not validated human psychology. Cluster assignments represent objective numerical groupings of behavioral proxies, never psychological or psychiatric diagnoses. Standardized regression coefficients and recurrent neural weights reflect statistical associations, not causal guarantees. Forecasters must never be used as measures of an individual's intrinsic worth, capability, or clinical state. What-if simulation prediction differences represent hypothetical model calculations under specific assumptions, not established real-world intervention outcomes. Autonomous agent plans and outputs are bounded by application-side security policies and evidence verification.

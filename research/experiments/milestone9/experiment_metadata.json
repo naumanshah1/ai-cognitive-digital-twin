@@ -1,0 +1,255 @@
+{
+  "timestamp_utc": "2026-10-21T09:39:40.752745+00:00",
+  "seed": 42,
+  "total_scenarios": 14,
+  "passed_scenarios": 14,
+  "pass_rate_percent": 100.0,
+  "postgresql_live_probe": {
+    "reachable": true,
+    "status": "connected",
+    "message": "connected"
+  },
+  "scenarios": [
+    {
+      "scenario_id": 1,
+      "name": "Health / Liveness Probe",
+      "endpoint": "GET /health",
+      "expected_status": 200,
+      "actual_status": 200,
+      "latency_ms": 109.68,
+      "passed": true,
+      "details": {
+        "status": "ok",
+        "environment": "development",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "scenario_id": 2,
+      "name": "System Readiness Probe",
+      "endpoint": "GET /health/ready",
+      "expected_status": 200,
+      "actual_status": 200,
+      "latency_ms": 21.31,
+      "passed": true,
+      "details": {
+        "status": "ready",
+        "environment": "development",
+        "version": "0.1.0",
+        "components": {
+          "database": {
+            "status": "ready",
+            "latency_ms": 3.15,
+            "message": "connected"
+          },
+          "ml_pipeline": {
+            "status": "ready",
+            "latency_ms": 0.1,
+            "message": "Feature engineering and regression models loaded"
+          }
+        }
+      }
+    },
+    {
+      "scenario_id": 3,
+      "name": "Valid Agent Run",
+      "endpoint": "POST /api/v1/agent/run",
+      "expected_status": 200,
+      "actual_status": 200,
+      "latency_ms": 5603.33,
+      "passed": true,
+      "details": {
+        "request_id": "req_e0d91b37928e",
+        "status": "COMPLETED",
+        "findings_count": 1,
+        "verification": true
+      }
+    },
+    {
+      "scenario_id": 4,
+      "name": "Payload Schema Validation Error",
+      "endpoint": "POST /api/v1/agent/run",
+      "expected_status": 422,
+      "actual_status": 422,
+      "latency_ms": 11.15,
+      "passed": true,
+      "details": {
+        "error_code": "VALIDATION_ERROR",
+        "message": "Request validation failed. Please check submitted payload parameters.",
+        "request_id": null,
+        "timestamp": "2026-10-21T09:39:40.605947+00:00",
+        "details": {
+          "validation_errors": [
+            {
+              "loc": "body -> goal",
+              "msg": "String should have at least 3 characters"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "scenario_id": 5,
+      "name": "Missing Authentication Header",
+      "endpoint": "POST /api/v1/agent/run",
+      "expected_status": 401,
+      "actual_status": 401,
+      "latency_ms": 7.78,
+      "passed": true,
+      "details": {
+        "error_code": "HTTP_401",
+        "message": "Authentication credentials were not provided. Include 'Authorization: Bearer <token>' or 'X-API-Key'.",
+        "request_id": null,
+        "timestamp": "2026-10-21T09:39:40.615482+00:00",
+        "details": null
+      }
+    },
+    {
+      "scenario_id": 6,
+      "name": "Invalid Authentication Credentials",
+      "endpoint": "POST /api/v1/agent/run",
+      "expected_status": 401,
+      "actual_status": 401,
+      "latency_ms": 10.74,
+      "passed": true,
+      "details": {
+        "error_code": "HTTP_401",
+        "message": "Invalid or unrecognized authentication credentials.",
+        "request_id": null,
+        "timestamp": "2026-10-21T09:39:40.626332+00:00",
+        "details": null
+      }
+    },
+    {
+      "scenario_id": 7,
+      "name": "Cross-User Access Prohibition",
+      "endpoint": "POST /api/v1/agent/run",
+      "expected_status": 403,
+      "actual_status": 403,
+      "latency_ms": 8.08,
+      "passed": true,
+      "details": {
+        "error_code": "HTTP_403",
+        "message": "Forbidden: You are not authorized to query or execute agent actions for user 'synthetic_user_05'.",
+        "request_id": null,
+        "timestamp": "2026-10-21T09:39:40.634412+00:00",
+        "details": null
+      }
+    },
+    {
+      "scenario_id": 8,
+      "name": "Provider Failure Fault Tolerance",
+      "endpoint": "POST /api/v1/agent/run",
+      "expected_status": 500,
+      "actual_status": 500,
+      "latency_ms": 7.49,
+      "passed": true,
+      "details": {
+        "error_code": "INTERNAL_SERVER_ERROR",
+        "message": "An unexpected server error occurred while processing the request.",
+        "request_id": null,
+        "timestamp": "2026-10-21T09:39:40.642209+00:00",
+        "details": null
+      }
+    },
+    {
+      "scenario_id": 9,
+      "name": "Database Audit Record Persistence",
+      "endpoint": "SQLAlchemy ORM (agent_execution_records)",
+      "expected_status": 200,
+      "actual_status": 200,
+      "latency_ms": 1.74,
+      "passed": true,
+      "details": {
+        "record_id": "exec_8f15cb9958be40a4",
+        "request_id": "req_e0d91b37928e",
+        "status": "COMPLETED",
+        "provider": "mock"
+      }
+    },
+    {
+      "scenario_id": 10,
+      "name": "Execution History Pagination",
+      "endpoint": "GET /api/v1/agent/history",
+      "expected_status": 200,
+      "actual_status": 200,
+      "latency_ms": 19.86,
+      "passed": true,
+      "details": {
+        "total_records": 1,
+        "items_returned": 1
+      }
+    },
+    {
+      "scenario_id": 11,
+      "name": "History Record Ownership Isolation",
+      "endpoint": "GET /api/v1/agent/history/req_e0d91b37928e",
+      "expected_status": 404,
+      "actual_status": 404,
+      "latency_ms": 9.28,
+      "passed": true,
+      "details": {
+        "error_code": "HTTP_404",
+        "message": "Execution record with request_id 'req_e0d91b37928e' not found or you do not have permission to access it.",
+        "request_id": null,
+        "timestamp": "2026-10-21T09:39:40.672957+00:00",
+        "details": null
+      }
+    },
+    {
+      "scenario_id": 12,
+      "name": "Degraded Database Safe Handling",
+      "endpoint": "GET /health/ready",
+      "expected_status": 503,
+      "actual_status": 503,
+      "latency_ms": 6.01,
+      "passed": true,
+      "details": {
+        "status": "unready",
+        "environment": "development",
+        "version": "0.1.0",
+        "components": {
+          "database": {
+            "status": "unreachable",
+            "latency_ms": 5.2,
+            "message": "database connection error (OperationalError)"
+          },
+          "ml_pipeline": {
+            "status": "ready",
+            "latency_ms": 0.1,
+            "message": "Feature engineering and regression models loaded"
+          }
+        }
+      }
+    },
+    {
+      "scenario_id": 13,
+      "name": "API Request Rate Limiting",
+      "endpoint": "POST /api/v1/agent/run",
+      "expected_status": 429,
+      "actual_status": 429,
+      "latency_ms": 16.3,
+      "passed": true,
+      "details": {
+        "error_code": "HTTP_429",
+        "message": "Rate limit exceeded. Too many requests. Please try again shortly.",
+        "request_id": null,
+        "timestamp": "2026-10-21T09:39:40.695681+00:00",
+        "details": null
+      }
+    },
+    {
+      "scenario_id": 14,
+      "name": "Deterministic What-If Simulation Evaluation",
+      "endpoint": "POST /api/v1/agent/run",
+      "expected_status": 200,
+      "actual_status": 200,
+      "latency_ms": 54.4,
+      "passed": true,
+      "details": {
+        "run_a_status": "COMPLETED",
+        "run_b_status": "COMPLETED"
+      }
+    }
+  ]
+}

@@ -9,10 +9,19 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     app_name: str = "AI Cognitive Digital Twin"
     app_env: str = "development"
+    app_version: str = "0.1.0"
     database_url: str = (
         "postgresql+psycopg://postgres:change_me"
         "@localhost:5432/cognitive_twin"
     )
+    database_pool_size: int = 5
+    database_pool_timeout: int = 10
+    database_max_overflow: int = 10
+
+    # API & Security Configuration
+    api_auth_secret: str = "dev-secret-key-change-in-production"
+    api_allowed_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+    api_rate_limit_per_minute: int = 60
 
     # LLM & Agentic AI Configuration
     llm_provider: str = "gemini"

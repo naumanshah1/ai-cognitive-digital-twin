@@ -13,6 +13,7 @@ def test_health_endpoint_returns_ok():
     assert response.json() == {
         "status": "ok",
         "environment": "development",
+        "version": "0.1.0",
     }
 
 
@@ -24,3 +25,5 @@ def test_openapi_documentation_is_available():
     schema = response.json()
     assert schema["info"]["title"] == "AI Cognitive Digital Twin"
     assert "/health" in schema["paths"]
+    assert "/health/ready" in schema["paths"]
+    assert "/api/v1/agent/run" in schema["paths"]

@@ -27,3 +27,8 @@ class BaseLLMProvider(ABC):
     ) -> Dict[str, Any]:
         """Synthesize final evidence-grounded summary and findings from executed tools."""
         pass
+
+
+from app.agent.providers.factory import MockLLMProvider, ProviderFactory
+
+__all__ = ["BaseLLMProvider", "MockLLMProvider", "ProviderFactory"]

@@ -67,8 +67,8 @@ def validate_user_scope(requested_user_id: Optional[str], target_user_id: Option
     if not target_user_id:
         return False, "Target user_id is missing."
 
-    # Check format: synthetic_XXXX
-    if not re.match(r"^synthetic_\d{4}$", target_user_id):
+    # Check format: synthetic_XXXX, synthetic_user_XX, or usr_XX
+    if not re.match(r"^(synthetic_\d{4}|synthetic_user_\w+|synthetic_\d+|usr_\w+)$", target_user_id):
         return False, f"Invalid target user format: {target_user_id}."
 
     # If the request scoped an authorized user, ensure target matches
