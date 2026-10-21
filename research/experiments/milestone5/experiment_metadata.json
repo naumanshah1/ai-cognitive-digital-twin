@@ -1,0 +1,195 @@
+{
+  "milestone": "Milestone 5 \u2014 Temporal Modelling & LSTM Evaluation",
+  "timestamp_utc": "2026-10-21T06:24:14.261481+00:00",
+  "python_version": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+  "seed": 42,
+  "task_definition": {
+    "forecast_origin": "End of day t",
+    "forecast_target": "Productivity score on day t+1",
+    "forecast_horizon_days": 1,
+    "strictly_excluded_from_inputs": [
+      "Contemporaneous day t+1 focus_duration_hours",
+      "Contemporaneous day t+1 sleep measurements",
+      "Contemporaneous day t+1 interruptions",
+      "Contemporaneous day t+1 task completions",
+      "Target productivity_score on day t+1"
+    ],
+    "permitted_inputs": [
+      "Historical daily behavioral telemetry (tau <= t)",
+      "Historical engineered features (tau <= t)",
+      "Historical productivity_score (tau <= t, observed past targets)"
+    ]
+  },
+  "sequence_counts": {
+    "primary_l7": {
+      "train_sequences": 2800,
+      "val_sequences": 650,
+      "test_sequences": 700
+    },
+    "compare_l14": {
+      "train_sequences": 2450,
+      "val_sequences": 650,
+      "test_sequences": 700
+    }
+  },
+  "partition_boundaries": {
+    "train_dates": [
+      "2026-01-01",
+      "2026-03-04"
+    ],
+    "val_target_dates": [
+      "2026-03-05",
+      "2026-03-17"
+    ],
+    "test_target_dates": [
+      "2026-03-18",
+      "2026-03-31"
+    ]
+  },
+  "feature_set": {
+    "num_features": 20,
+    "features": [
+      "sleep_hours",
+      "sleep_quality",
+      "focus_duration_hours",
+      "screen_time_hours",
+      "tasks_planned",
+      "tasks_completed",
+      "task_difficulty_avg",
+      "work_session_duration_hours",
+      "inactivity_duration_hours",
+      "interruption_count",
+      "mood_score",
+      "perceived_stress",
+      "task_completion_rate",
+      "work_session_utilization",
+      "inactivity_ratio",
+      "day_of_week",
+      "is_weekend",
+      "rolling_focus_std_7d",
+      "work_session_frequency_7d",
+      "productivity_score"
+    ]
+  },
+  "candidate_evaluations": {
+    "training_mean": {
+      "name": "Training-Mean Baseline",
+      "val_metrics": {
+        "mae": 8.9975,
+        "rmse": 11.1824,
+        "r2": -0.0058,
+        "sample_count": 650
+      },
+      "test_metrics": {
+        "mae": 8.5953,
+        "rmse": 10.8422,
+        "r2": -0.0028,
+        "sample_count": 700
+      },
+      "hyperparameters": {}
+    },
+    "persistence": {
+      "name": "Lag-1 Persistence Baseline",
+      "val_metrics": {
+        "mae": 11.7215,
+        "rmse": 14.6865,
+        "r2": -0.7349,
+        "sample_count": 650
+      },
+      "test_metrics": {
+        "mae": 10.9941,
+        "rmse": 13.7994,
+        "r2": -0.6244,
+        "sample_count": 700
+      },
+      "hyperparameters": {}
+    },
+    "lagged_ridge": {
+      "name": "Lagged Ridge Regression",
+      "val_metrics": {
+        "mae": 8.497,
+        "rmse": 10.5795,
+        "r2": 0.0997,
+        "sample_count": 650
+      },
+      "test_metrics": {
+        "mae": 8.0716,
+        "rmse": 10.1414,
+        "r2": 0.1227,
+        "sample_count": 700
+      },
+      "hyperparameters": {
+        "alpha": 100.0
+      }
+    },
+    "lstm_l7": {
+      "name": "LSTM (Lookback=7d)",
+      "val_metrics": {
+        "mae": 8.5159,
+        "rmse": 10.5843,
+        "r2": 0.0989,
+        "sample_count": 650
+      },
+      "test_metrics": {
+        "mae": 8.0748,
+        "rmse": 10.1749,
+        "r2": 0.1169,
+        "sample_count": 700
+      },
+      "hyperparameters": {
+        "input_dim": 20,
+        "hidden_dim": 32,
+        "num_layers": 1,
+        "dropout": 0.1,
+        "lookback": 7,
+        "best_epoch": 3
+      }
+    },
+    "lstm_l14": {
+      "name": "LSTM (Lookback=14d)",
+      "val_metrics": {
+        "mae": 8.3691,
+        "rmse": 10.4764,
+        "r2": 0.1172,
+        "sample_count": 650
+      },
+      "test_metrics": {
+        "mae": 8.0552,
+        "rmse": 10.1226,
+        "r2": 0.1259,
+        "sample_count": 700
+      },
+      "hyperparameters": {
+        "input_dim": 20,
+        "hidden_dim": 32,
+        "num_layers": 1,
+        "dropout": 0.1,
+        "lookback": 14,
+        "best_epoch": 4
+      }
+    }
+  },
+  "milestone4_reference": {
+    "task": "Retrospective same-day estimation (different task)",
+    "test_rmse": 6.965,
+    "test_r2": 0.5862,
+    "note": "Uses same-day focus, sleep, and interruptions; NOT a fair future-forecasting benchmark."
+  },
+  "model_selection": {
+    "criterion": "Validation RMSE minimization",
+    "selected_model": "LSTM (Lookback=14d)",
+    "val_metrics": {
+      "mae": 8.3691,
+      "rmse": 10.4764,
+      "r2": 0.1172,
+      "sample_count": 650
+    },
+    "test_metrics": {
+      "mae": 8.0552,
+      "rmse": 10.1226,
+      "r2": 0.1259,
+      "sample_count": 700
+    },
+    "lstm_beats_baselines": true
+  }
+}

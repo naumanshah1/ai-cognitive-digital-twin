@@ -1,0 +1,472 @@
+{
+  "milestone": "Milestone 4 \u2014 Regression-Based Productivity Prediction",
+  "timestamp_utc": "2026-10-21T06:03:07.138695+00:00",
+  "python_version": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+  "seed": 42,
+  "dataset": {
+    "n_users": 50,
+    "n_days": 90,
+    "total_records": 4500,
+    "target_column": "productivity_score",
+    "target_generation_formula": "latent = 30.0 + 4.0*focus + 3.0*(sleep - 7.0) + 3.0*user_consistency - 1.5*interruptions - 2.0*(task_difficulty - 3.0) + N(0, 7.0); productivity_score = clip(latent, 0.0, 100.0)",
+    "noise_specification": {
+      "theoretical_asymptotic_sigma": 7.0,
+      "finite_sample_test_noise_rms": 6.957,
+      "clipping_bounds": [
+        0.0,
+        100.0
+      ],
+      "clipping_active_in_sample": false,
+      "target_observed_range": [
+        7.6,
+        86.71
+      ]
+    }
+  },
+  "split": {
+    "strategy": "chronological_by_date",
+    "train_dates": [
+      "2026-01-01",
+      "2026-03-04"
+    ],
+    "train_rows": 3150,
+    "val_dates": [
+      "2026-03-05",
+      "2026-03-17"
+    ],
+    "val_rows": 650,
+    "test_dates": [
+      "2026-03-18",
+      "2026-03-31"
+    ],
+    "test_rows": 700
+  },
+  "feature_set": {
+    "feature_count": 19,
+    "features": [
+      "sleep_hours",
+      "sleep_quality",
+      "focus_duration_hours",
+      "screen_time_hours",
+      "tasks_planned",
+      "tasks_completed",
+      "task_difficulty_avg",
+      "work_session_duration_hours",
+      "inactivity_duration_hours",
+      "interruption_count",
+      "mood_score",
+      "perceived_stress",
+      "task_completion_rate",
+      "work_session_utilization",
+      "inactivity_ratio",
+      "day_of_week",
+      "is_weekend",
+      "rolling_focus_std_7d",
+      "work_session_frequency_7d"
+    ],
+    "strictly_excluded": [
+      "productivity_score",
+      "rolling_productivity_mean_7d",
+      "productivity_change_7d",
+      "user_id",
+      "record_date"
+    ]
+  },
+  "baselines": {
+    "dummy_mean_validation": {
+      "mae": 8.9976,
+      "rmse": 11.1826,
+      "r2": -0.0058,
+      "sample_count": 650
+    },
+    "lag1_persistence_validation": {
+      "mae": 11.7215,
+      "rmse": 14.6865,
+      "r2": -0.7349,
+      "sample_count": 650
+    },
+    "lag1_persistence_test": {
+      "mae": 10.9941,
+      "rmse": 13.7994,
+      "r2": -0.6244,
+      "sample_count": 700
+    },
+    "oracle_benchmark_test": {
+      "mae": 5.6271,
+      "rmse": 6.9562,
+      "r2": 0.5872,
+      "sample_count": 700
+    }
+  },
+  "candidate_evaluations": [
+    {
+      "model_name": "Dummy (Mean Baseline)",
+      "model_type": "DummyRegressor",
+      "train_metrics": {
+        "mae": 8.3697,
+        "rmse": 10.5686,
+        "r2": 0.0,
+        "sample_count": 3150
+      },
+      "val_metrics": {
+        "mae": 8.9976,
+        "rmse": 11.1826,
+        "r2": -0.0058,
+        "sample_count": 650
+      },
+      "test_metrics": null,
+      "hyperparameters": {
+        "strategy": "mean"
+      },
+      "feature_names": [
+        "sleep_hours",
+        "sleep_quality",
+        "focus_duration_hours",
+        "screen_time_hours",
+        "tasks_planned",
+        "tasks_completed",
+        "task_difficulty_avg",
+        "work_session_duration_hours",
+        "inactivity_duration_hours",
+        "interruption_count",
+        "mood_score",
+        "perceived_stress",
+        "task_completion_rate",
+        "work_session_utilization",
+        "inactivity_ratio",
+        "day_of_week",
+        "is_weekend",
+        "rolling_focus_std_7d",
+        "work_session_frequency_7d"
+      ],
+      "coefficients_or_importances": null,
+      "unstandardized_coefficients": null,
+      "unstandardized_intercept": null
+    },
+    {
+      "model_name": "Linear Regression",
+      "model_type": "LinearRegression",
+      "train_metrics": {
+        "mae": 5.5559,
+        "rmse": 6.9832,
+        "r2": 0.5634,
+        "sample_count": 3150
+      },
+      "val_metrics": {
+        "mae": 5.869,
+        "rmse": 7.3686,
+        "r2": 0.5633,
+        "sample_count": 650
+      },
+      "test_metrics": {
+        "mae": 5.6454,
+        "rmse": 6.9648,
+        "r2": 0.5862,
+        "sample_count": 700
+      },
+      "hyperparameters": {
+        "fit_intercept": true
+      },
+      "feature_names": [
+        "sleep_hours",
+        "sleep_quality",
+        "focus_duration_hours",
+        "screen_time_hours",
+        "tasks_planned",
+        "tasks_completed",
+        "task_difficulty_avg",
+        "work_session_duration_hours",
+        "inactivity_duration_hours",
+        "interruption_count",
+        "mood_score",
+        "perceived_stress",
+        "task_completion_rate",
+        "work_session_utilization",
+        "inactivity_ratio",
+        "day_of_week",
+        "is_weekend",
+        "rolling_focus_std_7d",
+        "work_session_frequency_7d"
+      ],
+      "coefficients_or_importances": {
+        "focus_duration_hours": 4.6668,
+        "interruption_count": -3.0976,
+        "sleep_hours": 3.0289,
+        "task_difficulty_avg": -1.8078,
+        "work_session_duration_hours": 1.2748,
+        "work_session_utilization": 0.5748,
+        "inactivity_duration_hours": -0.5619,
+        "inactivity_ratio": 0.5338,
+        "tasks_completed": -0.3322,
+        "is_weekend": -0.331,
+        "day_of_week": 0.1797,
+        "perceived_stress": 0.1772,
+        "task_completion_rate": 0.1209,
+        "tasks_planned": -0.0888,
+        "sleep_quality": -0.0737,
+        "mood_score": 0.0419,
+        "screen_time_hours": -0.0393,
+        "rolling_focus_std_7d": -0.0064,
+        "work_session_frequency_7d": 0.0
+      },
+      "unstandardized_coefficients": {
+        "work_session_utilization": 5.1801,
+        "inactivity_ratio": 4.2685,
+        "focus_duration_hours": 3.1722,
+        "sleep_hours": 3.0064,
+        "task_difficulty_avg": -2.0768,
+        "interruption_count": -1.6775,
+        "inactivity_duration_hours": -0.8544,
+        "work_session_duration_hours": 0.8183,
+        "is_weekend": -0.7326,
+        "task_completion_rate": 0.5005,
+        "tasks_completed": -0.2122,
+        "perceived_stress": 0.1887,
+        "day_of_week": 0.0899,
+        "sleep_quality": -0.0742,
+        "tasks_planned": -0.0517,
+        "mood_score": 0.0321,
+        "screen_time_hours": -0.0223,
+        "rolling_focus_std_7d": -0.0175,
+        "work_session_frequency_7d": 0.0
+      },
+      "unstandardized_intercept": 13.9095
+    },
+    {
+      "model_name": "Ridge Regression (L2)",
+      "model_type": "Ridge",
+      "train_metrics": {
+        "mae": 5.556,
+        "rmse": 6.9833,
+        "r2": 0.5634,
+        "sample_count": 3150
+      },
+      "val_metrics": {
+        "mae": 5.8693,
+        "rmse": 7.3686,
+        "r2": 0.5633,
+        "sample_count": 650
+      },
+      "test_metrics": null,
+      "hyperparameters": {
+        "alpha": 1.0,
+        "random_state": 42
+      },
+      "feature_names": [
+        "sleep_hours",
+        "sleep_quality",
+        "focus_duration_hours",
+        "screen_time_hours",
+        "tasks_planned",
+        "tasks_completed",
+        "task_difficulty_avg",
+        "work_session_duration_hours",
+        "inactivity_duration_hours",
+        "interruption_count",
+        "mood_score",
+        "perceived_stress",
+        "task_completion_rate",
+        "work_session_utilization",
+        "inactivity_ratio",
+        "day_of_week",
+        "is_weekend",
+        "rolling_focus_std_7d",
+        "work_session_frequency_7d"
+      ],
+      "coefficients_or_importances": {
+        "focus_duration_hours": 4.4706,
+        "interruption_count": -3.0967,
+        "sleep_hours": 3.0274,
+        "task_difficulty_avg": -1.8072,
+        "work_session_duration_hours": 1.4628,
+        "work_session_utilization": 0.6462,
+        "inactivity_duration_hours": -0.6207,
+        "inactivity_ratio": 0.5871,
+        "is_weekend": -0.3302,
+        "tasks_completed": -0.3279,
+        "day_of_week": 0.1792,
+        "perceived_stress": 0.1765,
+        "task_completion_rate": 0.1185,
+        "tasks_planned": -0.092,
+        "sleep_quality": -0.0729,
+        "mood_score": 0.0415,
+        "screen_time_hours": -0.0382,
+        "rolling_focus_std_7d": -0.0062,
+        "work_session_frequency_7d": 0.0
+      },
+      "unstandardized_coefficients": {
+        "work_session_utilization": 5.8236,
+        "inactivity_ratio": 4.6948,
+        "focus_duration_hours": 3.0388,
+        "sleep_hours": 3.0049,
+        "task_difficulty_avg": -2.0761,
+        "interruption_count": -1.677,
+        "inactivity_duration_hours": -0.9439,
+        "work_session_duration_hours": 0.9389,
+        "is_weekend": -0.7308,
+        "task_completion_rate": 0.4907,
+        "tasks_completed": -0.2094,
+        "perceived_stress": 0.188,
+        "day_of_week": 0.0896,
+        "sleep_quality": -0.0733,
+        "tasks_planned": -0.0536,
+        "mood_score": 0.0319,
+        "screen_time_hours": -0.0217,
+        "rolling_focus_std_7d": -0.017,
+        "work_session_frequency_7d": 0.0
+      },
+      "unstandardized_intercept": 13.3435
+    },
+    {
+      "model_name": "Random Forest Regressor",
+      "model_type": "RandomForestRegressor",
+      "train_metrics": {
+        "mae": 4.4304,
+        "rmse": 5.5129,
+        "r2": 0.7279,
+        "sample_count": 3150
+      },
+      "val_metrics": {
+        "mae": 6.0972,
+        "rmse": 7.6666,
+        "r2": 0.5272,
+        "sample_count": 650
+      },
+      "test_metrics": null,
+      "hyperparameters": {
+        "n_estimators": 100,
+        "max_depth": 8,
+        "min_samples_split": 5,
+        "random_state": 42
+      },
+      "feature_names": [
+        "sleep_hours",
+        "sleep_quality",
+        "focus_duration_hours",
+        "screen_time_hours",
+        "tasks_planned",
+        "tasks_completed",
+        "task_difficulty_avg",
+        "work_session_duration_hours",
+        "inactivity_duration_hours",
+        "interruption_count",
+        "mood_score",
+        "perceived_stress",
+        "task_completion_rate",
+        "work_session_utilization",
+        "inactivity_ratio",
+        "day_of_week",
+        "is_weekend",
+        "rolling_focus_std_7d",
+        "work_session_frequency_7d"
+      ],
+      "coefficients_or_importances": {
+        "focus_duration_hours": 0.5402,
+        "sleep_hours": 0.1292,
+        "interruption_count": 0.1088,
+        "task_difficulty_avg": 0.0621,
+        "work_session_utilization": 0.0217,
+        "rolling_focus_std_7d": 0.0213,
+        "work_session_duration_hours": 0.0203,
+        "screen_time_hours": 0.0177,
+        "inactivity_ratio": 0.0152,
+        "inactivity_duration_hours": 0.0126,
+        "task_completion_rate": 0.0113,
+        "tasks_completed": 0.0086,
+        "day_of_week": 0.008,
+        "tasks_planned": 0.0071,
+        "sleep_quality": 0.0066,
+        "mood_score": 0.0043,
+        "perceived_stress": 0.0041,
+        "is_weekend": 0.0011,
+        "work_session_frequency_7d": 0.0
+      },
+      "unstandardized_coefficients": null,
+      "unstandardized_intercept": null
+    },
+    {
+      "model_name": "Gradient Boosting Regressor",
+      "model_type": "GradientBoostingRegressor",
+      "train_metrics": {
+        "mae": 5.3019,
+        "rmse": 6.6357,
+        "r2": 0.6058,
+        "sample_count": 3150
+      },
+      "val_metrics": {
+        "mae": 6.091,
+        "rmse": 7.6068,
+        "r2": 0.5346,
+        "sample_count": 650
+      },
+      "test_metrics": null,
+      "hyperparameters": {
+        "n_estimators": 100,
+        "max_depth": 3,
+        "learning_rate": 0.05,
+        "random_state": 42
+      },
+      "feature_names": [
+        "sleep_hours",
+        "sleep_quality",
+        "focus_duration_hours",
+        "screen_time_hours",
+        "tasks_planned",
+        "tasks_completed",
+        "task_difficulty_avg",
+        "work_session_duration_hours",
+        "inactivity_duration_hours",
+        "interruption_count",
+        "mood_score",
+        "perceived_stress",
+        "task_completion_rate",
+        "work_session_utilization",
+        "inactivity_ratio",
+        "day_of_week",
+        "is_weekend",
+        "rolling_focus_std_7d",
+        "work_session_frequency_7d"
+      ],
+      "coefficients_or_importances": {
+        "focus_duration_hours": 0.6142,
+        "sleep_hours": 0.147,
+        "interruption_count": 0.138,
+        "task_difficulty_avg": 0.0543,
+        "work_session_utilization": 0.0155,
+        "work_session_duration_hours": 0.0091,
+        "inactivity_duration_hours": 0.0045,
+        "task_completion_rate": 0.004,
+        "inactivity_ratio": 0.0036,
+        "screen_time_hours": 0.0034,
+        "rolling_focus_std_7d": 0.002,
+        "sleep_quality": 0.0011,
+        "perceived_stress": 0.001,
+        "tasks_completed": 0.001,
+        "tasks_planned": 0.0009,
+        "day_of_week": 0.0005,
+        "mood_score": 0.0,
+        "is_weekend": 0.0,
+        "work_session_frequency_7d": 0.0
+      },
+      "unstandardized_coefficients": null,
+      "unstandardized_intercept": null
+    }
+  ],
+  "model_selection": {
+    "criterion": "val_rmse",
+    "selected_model": "Linear Regression",
+    "validation_metrics": {
+      "mae": 5.869,
+      "rmse": 7.3686,
+      "r2": 0.5633,
+      "sample_count": 650
+    },
+    "test_metrics": {
+      "mae": 5.6454,
+      "rmse": 6.9648,
+      "r2": 0.5862,
+      "sample_count": 700
+    },
+    "saved_model_artifact": "selected_productivity_regressor.joblib"
+  }
+}
