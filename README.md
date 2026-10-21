@@ -39,6 +39,19 @@ An AI/ML research project for behavioural pattern analysis, productivity estimat
   - Compact PyTorch LSTM architecture trained with Adam, MSE loss, early stopping, and checkpoint restoration on unseen validation loss.
   - Rigorous scientific assessment: Champion LSTM (14d lookback) achieved Test RMSE = 10.123 ($R^2$: 0.1259) vs. Lagged Ridge Test RMSE = 10.141 ($R^2$: 0.1227), demonstrating that recurrent architectures add no material benefit over simpler regularized linear models due to the conditional independence of daily fluctuations in the synthetic generator.
   - Full automated test suite (103 passing tests).
+- **Milestone 6 (Completed):** Behavioural Drift Detection:
+  - Longitudinal, per-user drift detection pipeline operating across 12 behavioural telemetry features (focus, sleep, interruptions, work sessions, task completion, stress, mood).
+  - Strict causal sliding window formulation: 14-day historical reference baseline ($W_{\text{ref}}$) vs. 7-day recent comparison window ($W_{\text{cmp}}$) with causal isolation preventing future-data leakage.
+  - Distribution metrics & hypothesis testing: Two-sample Mann-Whitney $U$ test, standardized effect size (Cohen's $d$), Earth Mover's Distance (Wasserstein metric), and Population Stability Index (PSI).
+  - Multi-hypothesis safety: Benjamini–Hochberg False Discovery Rate (FDR) adjustment controlling multiple testing across all candidate features at $\alpha = 0.05$.
+  - Explicit multi-tier decision policy: `STRONG_DRIFT` ($p_{\text{adj}} < 0.05$ with $|d| \ge 0.50$), `TENTATIVE_DRIFT` (moderate shift or large magnitude under review), `NO_DRIFT`, and `INSUFFICIENT_DATA`.
+  - Controlled scenario benchmarking ($N=50$ users, $T=90$ days):
+    - Stable Control: 3.50% false alarm rate (21/600 tests), strictly conforming to the theoretical $\alpha = 0.05$ limit.
+    - Focus-Drop Scenario: 60.0% sensitivity (30/50 users flagged, Cohen's $d \approx -1.5$), with unaffected features maintaining 16.60% FPR.
+    - Stress-Spike Scenario: 84.0% sensitivity (42/50 users flagged), with unrelated features maintaining 3.78% FPR.
+    - Recovery Scenario: 64.0% shift detection during active perturbation, with 66.0% returning verified normalized to baseline upon withdrawal.
+  - Responsible AI guardrails: strictly non-clinical framing (no burnout/depression diagnosis), neutral directionality, no causal assertions, and explicit sample sufficiency gating.
+  - Full automated test suite (118 passing tests).
 
 ---
 
@@ -77,7 +90,7 @@ Copy-Item .env.example .env
 
 ## Run Tests
 
-Run the full automated test suite (103 tests):
+Run the full automated test suite (118 tests):
 
 ```powershell
 python -m pytest -v
@@ -184,6 +197,25 @@ This generates:
 
 ---
 
+## Behavioural Drift Detection (Milestone 6)
+
+Execute the end-to-end multi-scenario behavioural drift detection experiments across Stable Control, Focus-Drop, Stress-Spike, and Recovery scenarios:
+
+```powershell
+python scripts/run_milestone6.py --users 50 --days 90 --seed 42 --ref-window 14 --cmp-window 7
+```
+
+This generates:
+- Research Report & Metadata:
+  - `research/experiments/milestone6/behavioural_drift_report.md`
+  - `research/experiments/milestone6/experiment_metadata.json`
+- Publication Diagnostic Charts (`research/experiments/milestone6/results/`):
+  - `reference_vs_monitoring_distributions.png` (Kernel density and histogram comparison across baseline and monitoring windows)
+  - `drift_timeline.png` (Longitudinal Cohen's $d$ trajectory and drift state transitions for sample user)
+  - `scenario_performance_summary.png` (Target detection sensitivity vs. false alarm rates across all evaluated scenarios)
+
+---
+
 ## Run the API
 
 ```powershell
@@ -207,6 +239,7 @@ Detailed experimental documentation is located in `research/experiments/`:
 - [Clustering Report](file:///research/experiments/milestone3/clustering_report.md): Candidate $k$ evaluation, unscaled cluster profiles, stability audits, and responsible AI limitations.
 - [Productivity Regression Report](file:///research/experiments/milestone4/regression_report.md): Regression modeling, validation model selection, test evaluation against theoretical noise floor, and causal disclaimers.
 - [Temporal Modelling & LSTM Evaluation Report](file:///research/experiments/milestone5/temporal_modeling_report.md): Day-ahead chronological forecasting, leakage-safe sequence sliding windows, matched baselines vs. PyTorch LSTM, and empirical value-add findings.
+- [Behavioural Drift Detection Report](file:///research/experiments/milestone6/behavioural_drift_report.md): Longitudinal per-user drift detection, multi-window causal isolation, Mann-Whitney U testing with FDR correction, controlled perturbation sensitivity, and return-to-baseline normalization.
 
 > **Statement of Academic Integrity:**
 > Synthetic experiments, real observations, predictions, and causal claims are documented and reported separately. Performance metrics obtained on synthetic datasets demonstrate pipeline correctness and rule recovery, not validated human psychology. Cluster assignments represent objective numerical groupings of behavioral proxies, never psychological or psychiatric diagnoses. Standardized regression coefficients and recurrent neural weights reflect statistical associations, not causal guarantees. Forecasters must never be used as measures of an individual's intrinsic worth, capability, or clinical state.

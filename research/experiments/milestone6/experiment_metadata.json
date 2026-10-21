@@ -1,0 +1,85 @@
+{
+  "milestone": "Milestone 6 \u2014 Behavioural Drift Detection",
+  "timestamp_utc": "2026-10-21T06:56:39.985749+00:00",
+  "python_version": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+  "seed": 42,
+  "cohort": {
+    "users_count": 50,
+    "days_count": 90,
+    "date_range": [
+      "2026-01-01",
+      "2026-03-31"
+    ]
+  },
+  "detector_configuration": {
+    "reference_window_days": 14,
+    "comparison_window_days": 7,
+    "min_reference_samples": 7,
+    "min_comparison_samples": 3,
+    "significance_alpha": 0.05,
+    "moderate_effect_threshold": 0.5,
+    "strong_effect_threshold": 0.8,
+    "psi_moderate_threshold": 0.1,
+    "psi_strong_threshold": 0.25,
+    "features": [
+      "focus_duration_hours",
+      "sleep_hours",
+      "sleep_quality",
+      "screen_time_hours",
+      "interruption_count",
+      "task_completion_rate",
+      "work_session_duration_hours",
+      "work_session_utilization",
+      "inactivity_duration_hours",
+      "inactivity_ratio",
+      "perceived_stress",
+      "mood_score"
+    ],
+    "multiple_testing_correction": true
+  },
+  "monitored_features": [
+    "focus_duration_hours",
+    "sleep_hours",
+    "sleep_quality",
+    "screen_time_hours",
+    "interruption_count",
+    "task_completion_rate",
+    "work_session_duration_hours",
+    "work_session_utilization",
+    "inactivity_duration_hours",
+    "inactivity_ratio",
+    "perceived_stress",
+    "mood_score"
+  ],
+  "scenarios_evaluated": {
+    "stable_control": {
+      "evaluation_date": "2026-03-16",
+      "valid_tests": 600,
+      "false_alarms": 21,
+      "false_alarm_rate": 0.035
+    },
+    "focus_drop": {
+      "evaluation_date": "2026-03-10",
+      "shift_onset_date": "2026-03-04",
+      "target_feature": "focus_duration_hours",
+      "detection_count": 30,
+      "detection_rate_sensitivity": 0.6,
+      "unrelated_features_fpr": 0.166
+    },
+    "stress_spike": {
+      "evaluation_date": "2026-03-10",
+      "shift_onset_date": "2026-03-04",
+      "target_feature": "perceived_stress",
+      "detection_count": 42,
+      "detection_rate_sensitivity": 0.84,
+      "unrelated_features_fpr": 0.0378
+    },
+    "recovery_and_return_to_baseline": {
+      "perturbed_phase_eval_date": "2026-03-02",
+      "perturbed_detection_count": 32,
+      "recovery_phase_eval_date": "2026-03-31",
+      "return_to_baseline_verified_count": 33,
+      "return_to_baseline_rate": 0.66
+    }
+  }
+}
