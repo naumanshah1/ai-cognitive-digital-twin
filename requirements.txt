@@ -1,0 +1,23 @@
+
+# API and validation
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+python-dotenv
+
+# Data processing and machine learning
+numpy
+pandas
+scipy
+scikit-learn
+torch
+
+# Database and migrations
+SQLAlchemy
+psycopg[binary]
+alembic
+
+# Testing
+pytest
+httpx
