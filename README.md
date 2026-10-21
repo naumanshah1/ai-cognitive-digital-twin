@@ -52,6 +52,15 @@ An AI/ML research project for behavioural pattern analysis, productivity estimat
     - Recovery Scenario: 64.0% shift detection during active perturbation, with 66.0% returning verified normalized to baseline upon withdrawal.
   - Responsible AI guardrails: strictly non-clinical framing (no burnout/depression diagnosis), neutral directionality, no causal assertions, and explicit sample sufficiency gating.
   - Full automated test suite (118 passing tests).
+- **Milestone 7 (Completed):** Personalized Recommendations & What-If Simulation:
+  - Evidence-based, deterministic recommendation engine (`app/ml/recommendations.py`) synthesizing multi-signal behavioral telemetry, detected drift alerts, and unsupervised cluster context across 7 operational categories: interruption management, session pacing, focus optimization, sleep recovery, stress pacing, task calibration, and data collection.
+  - Explainable multi-factor priority scoring formula ($S = 0.35M + 0.30E + 0.20C + 0.15P$) combining effect magnitude, statistical evidence quality, goal relevance, and telemetry completeness into a transparent $[0.0, 1.0]$ score.
+  - Responsible AI guardrails: deterministic duplicate suppression, cautious data collection prompts for insufficient observations ($N < 5$), non-clinical language safeguards (strictly prohibiting burnout/depression claims), and prominent disclaimers that suggestions are exploratory and non-diagnostic.
+  - Transparent what-if simulation engine (`app/ml/simulation.py`) enabling counterfactual feature explorations with input validation, strict domain bounds checking, out-of-distribution (OOD) flagging, and source input immutability.
+  - Task and target separation: explicit support for both retrospective productivity score estimation (Milestone 4 Linear Regression) and prospective day-ahead forecasting (Milestone 5 LSTM), strictly enforcing the forecast origin boundary to prevent future-data leakage.
+  - Controlled experimental evaluation ($N=50$ users, $T=90$ days): baseline cohort produced 37 structured recommendations with 60.0% sensitivity on focus-drop cohorts; simulation scenarios demonstrated exact reproduction of baseline predictions ($\Delta = +0.00$), realistic sensitivity to focus, interruption, and sleep interventions, and appropriate OOD warnings for extreme modifications.
+  - Non-causal counterfactual framing: model-generated differences are explicitly presented as conditional predictions under model assumptions, never as proven causal effects of real-world behavioral changes.
+  - Full automated test suite (136 passing tests).
 
 ---
 
@@ -90,7 +99,7 @@ Copy-Item .env.example .env
 
 ## Run Tests
 
-Run the full automated test suite (118 tests):
+Run the full automated test suite (136 tests):
 
 ```powershell
 python -m pytest -v
@@ -216,6 +225,25 @@ This generates:
 
 ---
 
+## Personalized Recommendations & What-If Simulation (Milestone 7)
+
+Execute the end-to-end recommendation engine evaluation and what-if simulation suite across baseline and perturbed cohorts:
+
+```powershell
+python scripts/run_milestone7.py --users 50 --days 90 --seed 42
+```
+
+This generates:
+- Research Report & Metadata:
+  - `research/experiments/milestone7/recommendation_simulation_report.md`
+  - `research/experiments/milestone7/experiment_metadata.json`
+- Publication Diagnostic Charts (`research/experiments/milestone7/results/`):
+  - `recommendations_by_category.png` (Distribution of generated recommendations and mean priority scores across categories)
+  - `simulated_productivity_deltas.png` (Before-and-after predicted productivity scores across counterfactual scenarios)
+  - `what_if_sensitivity_tornado.png` (Sensitivity analysis of productivity predictions to behavioral modifications)
+
+---
+
 ## Run the API
 
 ```powershell
@@ -240,6 +268,7 @@ Detailed experimental documentation is located in `research/experiments/`:
 - [Productivity Regression Report](file:///research/experiments/milestone4/regression_report.md): Regression modeling, validation model selection, test evaluation against theoretical noise floor, and causal disclaimers.
 - [Temporal Modelling & LSTM Evaluation Report](file:///research/experiments/milestone5/temporal_modeling_report.md): Day-ahead chronological forecasting, leakage-safe sequence sliding windows, matched baselines vs. PyTorch LSTM, and empirical value-add findings.
 - [Behavioural Drift Detection Report](file:///research/experiments/milestone6/behavioural_drift_report.md): Longitudinal per-user drift detection, multi-window causal isolation, Mann-Whitney U testing with FDR correction, controlled perturbation sensitivity, and return-to-baseline normalization.
+- [Recommendation & Simulation Report](file:///research/experiments/milestone7/recommendation_simulation_report.md): Evidence-based recommendation engine, multi-factor priority scoring, non-clinical safeguards, what-if counterfactual simulation, out-of-distribution detection, and non-causal research limitations.
 
 > **Statement of Academic Integrity:**
-> Synthetic experiments, real observations, predictions, and causal claims are documented and reported separately. Performance metrics obtained on synthetic datasets demonstrate pipeline correctness and rule recovery, not validated human psychology. Cluster assignments represent objective numerical groupings of behavioral proxies, never psychological or psychiatric diagnoses. Standardized regression coefficients and recurrent neural weights reflect statistical associations, not causal guarantees. Forecasters must never be used as measures of an individual's intrinsic worth, capability, or clinical state.
+> Synthetic experiments, real observations, predictions, and causal claims are documented and reported separately. Performance metrics obtained on synthetic datasets demonstrate pipeline correctness and rule recovery, not validated human psychology. Cluster assignments represent objective numerical groupings of behavioral proxies, never psychological or psychiatric diagnoses. Standardized regression coefficients and recurrent neural weights reflect statistical associations, not causal guarantees. Forecasters must never be used as measures of an individual's intrinsic worth, capability, or clinical state. What-if simulation prediction differences represent hypothetical model calculations under specific assumptions, not established real-world intervention outcomes.

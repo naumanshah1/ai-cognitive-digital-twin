@@ -54,6 +54,22 @@ from app.ml.drift import (
     plot_reference_vs_monitoring_distributions,
     plot_scenario_performance_summary,
 )
+from app.ml.recommendations import (
+    ConfidenceLevel,
+    RecommendationCategory,
+    RecommendationItem,
+    RecommendationReport,
+    compute_priority_score,
+    generate_recommendations,
+)
+from app.ml.simulation import (
+    SimulationResult,
+    SimulationScenario,
+    SimulationTaskType,
+    WhatIfSimulator,
+    detect_out_of_distribution,
+    validate_feature_bounds,
+)
 
 __all__ = [
     "BehavioralKMeansPipeline",
@@ -104,4 +120,16 @@ __all__ = [
     "plot_drift_timeline",
     "plot_reference_vs_monitoring_distributions",
     "plot_scenario_performance_summary",
+    "ConfidenceLevel",
+    "RecommendationCategory",
+    "RecommendationItem",
+    "RecommendationReport",
+    "compute_priority_score",
+    "generate_recommendations",
+    "SimulationResult",
+    "SimulationScenario",
+    "SimulationTaskType",
+    "WhatIfSimulator",
+    "detect_out_of_distribution",
+    "validate_feature_bounds",
 ]

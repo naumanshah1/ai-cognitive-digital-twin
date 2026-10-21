@@ -1,0 +1,288 @@
+{
+  "milestone": "Milestone 7 \u2014 Recommendations & What-If Simulation",
+  "timestamp_utc": "2026-10-21T07:33:54.984270+00:00",
+  "python_version": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+  "seed": 42,
+  "cohort": {
+    "users_count": 3,
+    "days_count": 35,
+    "evaluation_date": "2026-02-04"
+  },
+  "recommendation_engine": {
+    "categories_evaluated": [
+      "interruption_management",
+      "session_pacing",
+      "focus_optimization",
+      "sleep_recovery",
+      "stress_pacing",
+      "task_calibration",
+      "data_collection"
+    ],
+    "total_recommendations_generated": 0,
+    "category_distribution": {
+      "interruption_management": 0,
+      "session_pacing": 0,
+      "focus_optimization": 0,
+      "sleep_recovery": 0,
+      "stress_pacing": 0,
+      "task_calibration": 0,
+      "data_collection": 0
+    },
+    "category_mean_priority_scores": {
+      "interruption_management": 0.0,
+      "session_pacing": 0.0,
+      "focus_optimization": 0.0,
+      "sleep_recovery": 0.0,
+      "stress_pacing": 0.0,
+      "task_calibration": 0.0,
+      "data_collection": 0.0
+    },
+    "injected_focus_drop_sensitivity": 0.6667
+  },
+  "simulation_engine": {
+    "sample_user_id": "synthetic_0001",
+    "sample_baseline_score": 50.1031,
+    "retrospective_scenarios": [
+      {
+        "scenario_id": "SIM-BASE",
+        "scenario_name": "Baseline (Zero Modification)",
+        "task_type": "retrospective_estimation",
+        "features_modified": [],
+        "baseline_prediction": 50.1031,
+        "simulated_prediction": 50.1031,
+        "prediction_delta": 0.0,
+        "is_out_of_distribution": false,
+        "warnings": [],
+        "baseline_input": {
+          "focus_duration_hours": 5.18,
+          "work_session_duration_hours": 6.88,
+          "productivity_score": 50.03
+        },
+        "simulated_input": {
+          "focus_duration_hours": 5.18,
+          "work_session_duration_hours": 6.88,
+          "productivity_score": 50.03
+        },
+        "non_causal_disclaimer": "Under this retrospective regression model, the predicted productivity score changes by +0.00 points (from 50.10 to 50.10). This hypothetical model calculation does not demonstrate that a real-world intervention will cause this change."
+      },
+      {
+        "scenario_id": "SIM-FOC-P30",
+        "scenario_name": "Focus Duration +30 Min",
+        "task_type": "retrospective_estimation",
+        "features_modified": [
+          "focus_duration_hours"
+        ],
+        "baseline_prediction": 50.1031,
+        "simulated_prediction": 52.8359,
+        "prediction_delta": 2.7328,
+        "is_out_of_distribution": false,
+        "warnings": [],
+        "baseline_input": {
+          "focus_duration_hours": 5.18,
+          "work_session_duration_hours": 6.88,
+          "productivity_score": 50.03
+        },
+        "simulated_input": {
+          "focus_duration_hours": 5.68,
+          "work_session_duration_hours": 6.88,
+          "productivity_score": 50.03
+        },
+        "non_causal_disclaimer": "Under this retrospective regression model, the predicted productivity score changes by +2.73 points (from 50.10 to 52.84). This hypothetical model calculation does not demonstrate that a real-world intervention will cause this change."
+      },
+      {
+        "scenario_id": "SIM-FOC-P60",
+        "scenario_name": "Focus Duration +60 Min",
+        "task_type": "retrospective_estimation",
+        "features_modified": [
+          "focus_duration_hours"
+        ],
+        "baseline_prediction": 50.1031,
+        "simulated_prediction": 55.5691,
+        "prediction_delta": 5.466,
+        "is_out_of_distribution": false,
+        "warnings": [
+          "Sum of focus (6.18h) and inactivity (1.25h) exceeds work session duration (6.88h)."
+        ],
+        "baseline_input": {
+          "focus_duration_hours": 5.18,
+          "work_session_duration_hours": 6.88,
+          "productivity_score": 50.03
+        },
+        "simulated_input": {
+          "focus_duration_hours": 6.18,
+          "work_session_duration_hours": 6.88,
+          "productivity_score": 50.03
+        },
+        "non_causal_disclaimer": "Under this retrospective regression model, the predicted productivity score changes by +5.47 points (from 50.10 to 55.57). This hypothetical model calculation does not demonstrate that a real-world intervention will cause this change."
+      },
+      {
+        "scenario_id": "SIM-INT-M2",
+        "scenario_name": "Interruption Reduction (-2/day)",
+        "task_type": "retrospective_estimation",
+        "features_modified": [
+          "interruption_count"
+        ],
+        "baseline_prediction": 50.1031,
+        "simulated_prediction": 53.9406,
+        "prediction_delta": 3.8375,
+        "is_out_of_distribution": false,
+        "warnings": [],
+        "baseline_input": {
+          "focus_duration_hours": 5.18,
+          "work_session_duration_hours": 6.88,
+          "interruption_count": 7,
+          "productivity_score": 50.03
+        },
+        "simulated_input": {
+          "focus_duration_hours": 5.18,
+          "work_session_duration_hours": 6.88,
+          "interruption_count": 5.0,
+          "productivity_score": 50.03
+        },
+        "non_causal_disclaimer": "Under this retrospective regression model, the predicted productivity score changes by +3.84 points (from 50.10 to 53.94). This hypothetical model calculation does not demonstrate that a real-world intervention will cause this change."
+      },
+      {
+        "scenario_id": "SIM-SLP-P60",
+        "scenario_name": "Sleep Duration +60 Min",
+        "task_type": "retrospective_estimation",
+        "features_modified": [
+          "sleep_hours"
+        ],
+        "baseline_prediction": 50.1031,
+        "simulated_prediction": 51.8231,
+        "prediction_delta": 1.72,
+        "is_out_of_distribution": false,
+        "warnings": [],
+        "baseline_input": {
+          "sleep_hours": 6.49,
+          "focus_duration_hours": 5.18,
+          "work_session_duration_hours": 6.88,
+          "productivity_score": 50.03
+        },
+        "simulated_input": {
+          "sleep_hours": 7.49,
+          "focus_duration_hours": 5.18,
+          "work_session_duration_hours": 6.88,
+          "productivity_score": 50.03
+        },
+        "non_causal_disclaimer": "Under this retrospective regression model, the predicted productivity score changes by +1.72 points (from 50.10 to 51.82). This hypothetical model calculation does not demonstrate that a real-world intervention will cause this change."
+      },
+      {
+        "scenario_id": "SIM-DEEP-SPRINT",
+        "scenario_name": "Deep Work Sprint (+1h Focus, -2 Int, +1h Session)",
+        "task_type": "retrospective_estimation",
+        "features_modified": [
+          "focus_duration_hours",
+          "interruption_count",
+          "work_session_duration_hours"
+        ],
+        "baseline_prediction": 50.1031,
+        "simulated_prediction": 58.0936,
+        "prediction_delta": 7.9905,
+        "is_out_of_distribution": false,
+        "warnings": [],
+        "baseline_input": {
+          "focus_duration_hours": 5.18,
+          "work_session_duration_hours": 6.88,
+          "interruption_count": 7,
+          "productivity_score": 50.03
+        },
+        "simulated_input": {
+          "focus_duration_hours": 6.18,
+          "work_session_duration_hours": 7.88,
+          "interruption_count": 5.0,
+          "productivity_score": 50.03
+        },
+        "non_causal_disclaimer": "Under this retrospective regression model, the predicted productivity score changes by +7.99 points (from 50.10 to 58.09). This hypothetical model calculation does not demonstrate that a real-world intervention will cause this change."
+      },
+      {
+        "scenario_id": "SIM-STRESS-BUFFER",
+        "scenario_name": "Stress Mitigation (-1 Stress, -30m Inactivity)",
+        "task_type": "retrospective_estimation",
+        "features_modified": [
+          "perceived_stress",
+          "inactivity_duration_hours"
+        ],
+        "baseline_prediction": 50.1031,
+        "simulated_prediction": 46.9414,
+        "prediction_delta": -3.1618,
+        "is_out_of_distribution": false,
+        "warnings": [],
+        "baseline_input": {
+          "focus_duration_hours": 5.18,
+          "work_session_duration_hours": 6.88,
+          "inactivity_duration_hours": 1.25,
+          "perceived_stress": 3,
+          "productivity_score": 50.03
+        },
+        "simulated_input": {
+          "focus_duration_hours": 5.18,
+          "work_session_duration_hours": 6.88,
+          "inactivity_duration_hours": 0.75,
+          "perceived_stress": 2.0,
+          "productivity_score": 50.03
+        },
+        "non_causal_disclaimer": "Under this retrospective regression model, the predicted productivity score changes by -3.16 points (from 50.10 to 46.94). This hypothetical model calculation does not demonstrate that a real-world intervention will cause this change."
+      },
+      {
+        "scenario_id": "SIM-OOD-EXTREME",
+        "scenario_name": "Extreme Out-of-Distribution (+8h Focus)",
+        "task_type": "retrospective_estimation",
+        "features_modified": [
+          "focus_duration_hours",
+          "work_session_duration_hours"
+        ],
+        "baseline_prediction": 50.1031,
+        "simulated_prediction": 92.8377,
+        "prediction_delta": 42.7345,
+        "is_out_of_distribution": true,
+        "warnings": [
+          "Feature 'focus_duration_hours' = 13.18 is unusually high (plausible max: 12.0).",
+          "Work session duration (15.38h) exceeds device screen time (8.45h).",
+          "Feature 'work_session_duration_hours' = 15.38 is outside training IQR bounds [-0.85, 14.48]."
+        ],
+        "baseline_input": {
+          "focus_duration_hours": 5.18,
+          "work_session_duration_hours": 6.88,
+          "productivity_score": 50.03
+        },
+        "simulated_input": {
+          "focus_duration_hours": 13.18,
+          "work_session_duration_hours": 15.38,
+          "productivity_score": 50.03
+        },
+        "non_causal_disclaimer": "Under this retrospective regression model, the predicted productivity score changes by +42.73 points (from 50.10 to 92.84). This hypothetical model calculation does not demonstrate that a real-world intervention will cause this change."
+      }
+    ],
+    "forecasting_scenario": {
+      "scenario_id": "SIM-FORECAST-FOC",
+      "scenario_name": "Forecast Origin Focus +60 Min",
+      "task_type": "future_forecasting",
+      "features_modified": [
+        "focus_duration_hours"
+      ],
+      "baseline_prediction": 47.2976,
+      "simulated_prediction": 47.4163,
+      "prediction_delta": 0.1187,
+      "is_out_of_distribution": true,
+      "warnings": [
+        "Sum of focus (2.48h) and inactivity (2.44h) exceeds work session duration (4.40h).",
+        "Sum of focus (3.48h) and inactivity (2.44h) exceeds work session duration (4.40h).",
+        "Feature 'inactivity_ratio' = 0.55 is outside training IQR bounds [-0.15, 0.55]."
+      ],
+      "baseline_input": {
+        "focus_duration_hours": 2.48,
+        "productivity_score": 23.18
+      },
+      "simulated_input": {
+        "focus_duration_hours": 3.48,
+        "productivity_score": 23.18
+      },
+      "non_causal_disclaimer": "Under this temporal forecasting LSTM model, next-day predicted productivity changes by +0.12 points (from 47.30 to 47.42). This hypothetical model calculation does not demonstrate that a real-world intervention will cause this future change."
+    }
+  },
+  "reproducibility": {
+    "deterministic_execution": true,
+    "random_seed": 42
+  }
+}
