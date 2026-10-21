@@ -22,3 +22,8 @@ alembic
 # Testing
 pytest
 httpx
+
+# Agentic AI and orchestration
+langgraph>=1.2.0
+langchain>=1.4.0
+langchain-google-genai>=4.4.0

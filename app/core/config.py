@@ -1,5 +1,7 @@
 
+import os
 from functools import lru_cache
+from typing import Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -11,6 +13,25 @@ class Settings(BaseSettings):
         "postgresql+psycopg://postgres:change_me"
         "@localhost:5432/cognitive_twin"
     )
+
+    # LLM & Agentic AI Configuration
+    llm_provider: str = "gemini"
+    llm_model: str = "gemini-1.5-flash"
+    gemini_api_key: Optional[str] = None
+    google_api_key: Optional[str] = None
+    agent_mode: str = "llm"  # "llm" or "deterministic"
+    agent_max_steps: int = 8
+    agent_max_tool_calls: int = 5
+
+    @property
+    def effective_gemini_api_key(self) -> Optional[str]:
+        """Securely resolve Gemini/Google API key without logging or exposing."""
+        return (
+            self.gemini_api_key
+            or self.google_api_key
+            or os.environ.get("GEMINI_API_KEY")
+            or os.environ.get("GOOGLE_API_KEY")
+        )
 
     model_config = SettingsConfigDict(
         env_file=".env",

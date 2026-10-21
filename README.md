@@ -61,6 +61,16 @@ An AI/ML research project for behavioural pattern analysis, productivity estimat
   - Controlled experimental evaluation ($N=50$ users, $T=90$ days): baseline cohort produced 37 structured recommendations with 60.0% sensitivity on focus-drop cohorts; simulation scenarios demonstrated exact reproduction of baseline predictions ($\Delta = +0.00$), realistic sensitivity to focus, interruption, and sleep interventions, and appropriate OOD warnings for extreme modifications.
   - Non-causal counterfactual framing: model-generated differences are explicitly presented as conditional predictions under model assumptions, never as proven causal effects of real-world behavioral changes.
   - Full automated test suite (136 passing tests).
+- **Milestone 8 (Completed):** Autonomous Behavioural Intelligence Agent via LangGraph & Google Gemini:
+  - Genuine LLM-driven autonomous agent architecture orchestrated with **LangGraph** as the state machine execution engine, **LangChain** as the model integration layer, and **Google Gemini** (`gemini-2.5-flash`) as the LLM provider.
+  - Graph State Machine Architecture: Request Validation $\to$ LLM Planning $\to$ Policy Check $\to$ Tool Execution $\to$ Progress Evaluation $\to$ Evidence Verification $\to$ Final Response Synthesis, using real LangGraph nodes, typed state, and conditional edges.
+  - Real Tool Integration: 5 registered tools wrapping existing project capabilities (`get_behavioral_summary`, `detect_behavioral_drift`, `generate_recommendations`, `run_what_if_simulation`, `predict_productivity`).
+  - Security & Safety Policy Layer: hard tool allowlist, strict cross-user data isolation (preventing unauthorized cross-user access), prompt injection defense (blocking `eval`, `exec`, `os.system`, `DROP TABLE`), non-overridable step/call budgets (`AGENT_MAX_STEPS=8`, `AGENT_MAX_TOOL_CALLS=5`), non-clinical guardrails (blocking burnout/depression claims), and non-causal simulation disclaimers.
+  - Evidence-Grounded Verification: application-side `EvidenceVerifier` auditing all generated response claims against execution traces and tool outputs.
+  - Transparent Dual Modes: supports both live Google Gemini execution (`AGENT_MODE=llm`) and pure deterministic rule fallback (`AGENT_MODE=deterministic`), with explicit response provenance labeling.
+  - Live Gemini Tool Calling Verified: passed live Gemini connectivity and LangGraph tool execution test in 6.66s without exposing credentials.
+  - 14-scenario controlled evaluation suite achieving 100.0% benchmark pass rate.
+  - Full automated test suite (177 passing tests).
 
 ---
 
@@ -99,7 +109,7 @@ Copy-Item .env.example .env
 
 ## Run Tests
 
-Run the full automated test suite (136 tests):
+Run the full automated test suite (177 tests):
 
 ```powershell
 python -m pytest -v
@@ -244,6 +254,46 @@ This generates:
 
 ---
 
+## Autonomous Agentic AI System (Milestone 8)
+
+The system features an autonomous agent orchestrated with **LangGraph** and powered by **Google Gemini** (`gemini-2.5-flash`), with transparent deterministic fallback.
+
+### 1. Execute Benchmark Evaluation (14 Controlled Scenarios)
+
+```powershell
+python scripts/run_milestone8.py --users 50 --days 90 --seed 42
+```
+
+### 2. Verify Live Gemini Tool Calling (Bounded Connectivity Check)
+
+```powershell
+python scripts/verify_live_gemini.py
+```
+
+### 3. Programmatic Usage (Python)
+
+```python
+from app.agent import CognitiveTwinAgent, AgentRequest
+
+# Instantiate agent (defaults to live Gemini if GEMINI_API_KEY is configured, or mode="deterministic")
+agent = CognitiveTwinAgent(mode="llm")
+
+# Execute natural-language request through LangGraph
+response = agent.run(AgentRequest(
+    request_id="demo-001",
+    query="Review longitudinal drift and simulate what happens if focus duration increases by 1 hour",
+    user_id="synthetic_0001",
+    simulation_params={"focus_duration_hours": 1.0},
+))
+
+print("Status:", response.status.value)
+print("Summary:", response.summary)
+print("Findings:", response.findings)
+print("Trace Steps:", len(response.execution_trace))
+```
+
+---
+
 ## Run the API
 
 ```powershell
@@ -269,6 +319,7 @@ Detailed experimental documentation is located in `research/experiments/`:
 - [Temporal Modelling & LSTM Evaluation Report](file:///research/experiments/milestone5/temporal_modeling_report.md): Day-ahead chronological forecasting, leakage-safe sequence sliding windows, matched baselines vs. PyTorch LSTM, and empirical value-add findings.
 - [Behavioural Drift Detection Report](file:///research/experiments/milestone6/behavioural_drift_report.md): Longitudinal per-user drift detection, multi-window causal isolation, Mann-Whitney U testing with FDR correction, controlled perturbation sensitivity, and return-to-baseline normalization.
 - [Recommendation & Simulation Report](file:///research/experiments/milestone7/recommendation_simulation_report.md): Evidence-based recommendation engine, multi-factor priority scoring, non-clinical safeguards, what-if counterfactual simulation, out-of-distribution detection, and non-causal research limitations.
+- [Agentic AI Framework Report](file:///research/experiments/milestone8/agent_framework_report.md): Autonomous agent architecture, LangGraph state machine workflow, Google Gemini integration, application-level policy enforcement, 14-scenario evaluation results, and ethical AI guardrails.
 
 > **Statement of Academic Integrity:**
-> Synthetic experiments, real observations, predictions, and causal claims are documented and reported separately. Performance metrics obtained on synthetic datasets demonstrate pipeline correctness and rule recovery, not validated human psychology. Cluster assignments represent objective numerical groupings of behavioral proxies, never psychological or psychiatric diagnoses. Standardized regression coefficients and recurrent neural weights reflect statistical associations, not causal guarantees. Forecasters must never be used as measures of an individual's intrinsic worth, capability, or clinical state. What-if simulation prediction differences represent hypothetical model calculations under specific assumptions, not established real-world intervention outcomes.
+> Synthetic experiments, real observations, predictions, and causal claims are documented and reported separately. Performance metrics obtained on synthetic datasets demonstrate pipeline correctness and rule recovery, not validated human psychology. Cluster assignments represent objective numerical groupings of behavioral proxies, never psychological or psychiatric diagnoses. Standardized regression coefficients and recurrent neural weights reflect statistical associations, not causal guarantees. Forecasters must never be used as measures of an individual's intrinsic worth, capability, or clinical state. What-if simulation prediction differences represent hypothetical model calculations under specific assumptions, not established real-world intervention outcomes. Autonomous agent plans and outputs are bounded by application-side security policies and evidence verification.

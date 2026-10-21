@@ -1,0 +1,16 @@
+{
+  "timestamp": 1792569274.222799,
+  "provider": "gemini",
+  "configured_model": "gemini-2.5-flash",
+  "api_key_configured": true,
+  "success": true,
+  "latency_seconds": 6.66,
+  "tool_executed": [
+    "get_behavioral_summary"
+  ],
+  "execution_status": "completed",
+  "verification_passed": true,
+  "findings_count": 1,
+  "error_category": null,
+  "error_message": null
+}
