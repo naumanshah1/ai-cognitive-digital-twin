@@ -79,6 +79,18 @@ An AI/ML research project for behavioural pattern analysis, productivity estimat
   - Authentication & Authorization: Maintainable Bearer token / API-key dependencies with cryptographic key hashing and explicit caller-to-telemetry ownership verification.
   - Security & Reliability: Cross-user data isolation, in-memory sliding-window request throttling (HTTP 429), safe error serialization, and non-clinical/non-causal guardrails.
   - Full automated test suite (197 passing tests across all Milestones 1–9).
+- **Milestone 10 (Completed):** Full React Frontend Dashboard:
+  - Responsive Single-Page Application (SPA) built with React 19, TypeScript 5, Vite, and Tailwind CSS v4.
+  - Real FastAPI Contract Integration: Direct binding to `/health`, `/health/ready`, `/api/v1/users/me`, `/api/v1/agent/run`, `/api/v1/agent/history`, and `/api/v1/agent/history/{request_id}`.
+  - Interactive Visualizations: Recharts-powered observed metric charts and baseline-versus-simulated productivity comparison charts with explicit non-causal disclaimers.
+  - Automated Quality Assurance: 19 Vitest unit/integration tests (100% pass rate), strict TypeScript type checking (`tsc -b`), production Vite build, and 197 full repository backend tests.
+- **Commercial Product Transformation (Completed):**
+  - Partitioned 3-tier product architecture: Public Marketing (`/`), User Workspace (`/app/*`), and Admin Console (`/admin/*`).
+  - Production-grade authentication: OWASP-compliant PBKDF2-HMAC-SHA256 password hashing and cryptographically signed HS256 JWT tokens with server-enforced role-based access control (RBAC).
+  - Regular user workspace completely sanitized of internal infrastructure diagnostics, focused on personal behavioural intelligence.
+  - Dedicated admin console displaying live PostgreSQL connection pool metrics, cognitive engine diagnostics, user account management, and multi-tenant audit logs.
+  - Context & identity consistency: regular users strictly isolated to authorized records, blocking cross-tenant queries with HTTP 403.
+  - Verified across 33 backend pytest tests, 24 frontend Vitest tests, clean production build, and automated browser subagent validation.
 
 ---
 
@@ -363,6 +375,92 @@ python scripts/run_milestone9.py --seed 42
 
 ---
 
+## Frontend Dashboard (React & TypeScript)
+
+Milestone 10 introduces a responsive single-page application dashboard built with **React 19**, **TypeScript**, **Vite**, **Tailwind CSS v4**, and **Recharts**.
+
+### 1. Frontend Prerequisites & Installation
+
+Ensure Node.js 18+ and npm are installed:
+
+```powershell
+cd frontend
+npm install
+```
+
+### 2. Frontend Environment Configuration
+
+Create a `.env` file inside `frontend/` (or copy from `frontend/.env.example`):
+
+```bash
+VITE_API_BASE_URL=http://127.0.0.1:8000
+VITE_DEFAULT_AUTH_TOKEN=dev-synthetic-00
+VITE_DEFAULT_USER_ID=synthetic_user_00
+```
+
+> [!SECURITY]
+> **No Secrets in Browser Builds:** The frontend environment contains exclusively public client configurations. Server-side secrets, database passwords, and Gemini API keys must never be placed in `frontend/.env`.
+
+### 3. Running the Full Stack Locally
+
+**Terminal 1 — Start the FastAPI Service:**
+```powershell
+# In project root with .venv active:
+python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+**Terminal 2 — Start the React Development Server:**
+```powershell
+cd frontend
+npm run dev
+```
+
+Open your browser at [http://localhost:5173](http://localhost:5173).
+
+### 4. Authentication & Role-Based Access Control
+
+The application features full cryptographic authentication with partitioned experiences:
+- **Public Experience (`/`):** Marketing landing page, registration (`/signup`), login (`/signin`), terms of service (`/terms`), and privacy policy (`/privacy`).
+- **User Workspace (`/app/*`):** Consumer-grade personal behavioural dashboard. Regular users access only their authorized data (`user_id`). All infrastructure diagnostics, database pool latencies, and service health monitors are removed.
+- **Admin Console (`/admin/*`):** Operational governance dashboard with database pool metrics, cognitive engine diagnostics, registered user directory, and multi-tenant audit execution history.
+- **Seeded Development Credentials:**
+  - Standard User: `demo@cognitivetwin.ai` / `DemoPass123!` (lands on `/app`)
+  - Administrator: `admin@cognitivetwin.ai` / `AdminPass123!` (lands on `/admin`)
+
+### 5. Application Experiences & Routes
+
+- **Public Routes:**
+  - Landing Page (`/`): Product overview, interactive feature cards, responsible AI notices, and CTA.
+  - Sign In (`/signin`): Live credential authentication with show/hide password and quick test account fill buttons.
+  - Sign Up (`/signup`): User registration with password strength validation and terms agreement.
+- **Regular User Routes (`/app/*`):**
+  - Personal Overview (`/app`): Personal baseline indicators, drift alerts, prioritized interventions, and recent inquiries.
+  - Behavioural Insights (`/app/insights`): Empirical telemetry, focus hours, meeting duration, and temporal patterns.
+  - Drift Detection (`/app/drift`): Longitudinal covariate shift detection via Kolmogorov-Smirnov test.
+  - Recommendations (`/app/recommendations`): Prioritized behavioural interventions with evidence rationales.
+  - What-if Simulation (`/app/simulation`): Counterfactual scenario simulation with non-causal disclosures.
+  - AI Agent Workspace (`/app/agent`): Interactive LangGraph agent console powered by Google Gemini.
+  - Execution History (`/app/history`): Personal audit trail of agent executions and tool traces.
+- **Administrator Routes (`/admin/*`):**
+  - Admin Overview (`/admin`): Real-time metrics on registered users, active accounts, execution counts, and database health.
+  - System Health (`/admin/health`): Connection pool telemetry, query latency, and cognitive model readiness.
+  - User Directory (`/admin/users`): Multi-tenant account directory with role assignments and activity metrics.
+  - Audit Trail (`/admin/audit`): System-wide execution logs with tool latencies and outcome statuses.
+
+### 6. Frontend Testing & Production Build
+
+```powershell
+cd frontend
+
+# Run automated Vitest test suite (24 unit/integration tests)
+npm test
+
+# Run TypeScript type check and production bundle build
+npm run build
+```
+
+---
+
 ## Research Integrity & Documentation
 
 Detailed experimental documentation is located in `research/experiments/`:
@@ -378,6 +476,8 @@ Detailed experimental documentation is located in `research/experiments/`:
 - [Recommendation & Simulation Report](file:///research/experiments/milestone7/recommendation_simulation_report.md): Evidence-based recommendation engine, multi-factor priority scoring, non-clinical safeguards, what-if counterfactual simulation, out-of-distribution detection, and non-causal research limitations.
 - [Agentic AI Framework Report](file:///research/experiments/milestone8/agent_framework_report.md): Autonomous agent architecture, LangGraph state machine workflow, Google Gemini integration, application-level policy enforcement, 14-scenario evaluation results, and ethical AI guardrails.
 - [Backend Architecture & PostgreSQL Integration Report](file:///research/experiments/milestone9/backend_integration_report.md): Production-grade FastAPI backend, PostgreSQL / SQLAlchemy 2.x persistence, Alembic migrations, dual-tier health probes, API authentication, and benchmark evaluation results.
+- [Frontend Dashboard & Visual Intelligence Report](file:///research/experiments/milestone10/frontend_dashboard_report.md): Responsive React 19 / TypeScript single-page application, Recharts data visualizers, full 8-page module integration, accessibility compliance, and 19-scenario automated frontend test results.
+- [Commercial Product Transformation Report](file:///research/experiments/product_redesign/commercial_product_transformation_report.md): Comprehensive report detailing the commercial product redesign, partitioned 3-tier UX, PBKDF2/JWT authentication, server-enforced RBAC, identity consistency resolution, and full empirical verification results.
 
 > **Statement of Academic Integrity:**
 > Synthetic experiments, real observations, predictions, and causal claims are documented and reported separately. Performance metrics obtained on synthetic datasets demonstrate pipeline correctness and rule recovery, not validated human psychology. Cluster assignments represent objective numerical groupings of behavioral proxies, never psychological or psychiatric diagnoses. Standardized regression coefficients and recurrent neural weights reflect statistical associations, not causal guarantees. Forecasters must never be used as measures of an individual's intrinsic worth, capability, or clinical state. What-if simulation prediction differences represent hypothetical model calculations under specific assumptions, not established real-world intervention outcomes. Autonomous agent plans and outputs are bounded by application-side security policies and evidence verification.

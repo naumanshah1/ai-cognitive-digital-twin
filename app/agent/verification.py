@@ -70,7 +70,7 @@ class EvidenceVerifier:
         # If numbers like "Delta: +X" or "Focus: Y" appear, verify presence in evidence
         # We check if numbers claimed in text can be matched against numbers in tool outputs
         numbers_in_text = re.findall(r"\b\d+\.?\d*\b", all_text)
-        tool_data_str = " ".join([str(t.data) for t in tool_results])
+        tool_data_str = " ".join([f"{t.data} {t.evidence_summary} {t.error_message}" for t in tool_results])
         for num in numbers_in_text:
             if float(num) > 10.0 and num not in tool_data_str:
                 # Flag large numbers not grounded in any tool output

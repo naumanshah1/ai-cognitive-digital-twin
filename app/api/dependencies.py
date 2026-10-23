@@ -9,6 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
+from app.core.security import decode_access_token
 from app.db.models.user import User
 from app.db.session import get_db
 
@@ -24,18 +25,28 @@ class AuthenticatedPrincipal:
         user_id: str,
         username: str,
         display_name: str,
+        email: Optional[str] = None,
+        role: str = "user",
         roles: Optional[List[str]] = None,
         authorized_scopes: Optional[Set[str]] = None,
     ):
         self.user_id = user_id
         self.username = username
         self.display_name = display_name
-        self.roles = roles or ["user"]
+        self.email = email
+        self.role = role
+        self.roles = roles or ([role] if role else ["user"])
+        if ("admin" in self.roles or self.role == "admin") and "user" not in self.roles:
+            self.roles.append("user")
         self.authorized_scopes = authorized_scopes or {user_id}
+
+    def has_role(self, role: str) -> bool:
+        """Check if principal possesses specified role."""
+        return role in self.roles or self.role == role
 
     def is_authorized_for_user(self, target_user_id: str) -> bool:
         """Verify whether this principal has explicit permission to access target_user_id."""
-        if "admin" in self.roles:
+        if self.has_role("admin"):
             return True
         return target_user_id in self.authorized_scopes
 
@@ -104,23 +115,60 @@ def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    # 1. Check for system admin key
-    if token == settings.api_auth_secret or token == "admin-secret-dev":
+    # 1. Check for signed JWT token
+    claims = decode_access_token(token)
+    if claims:
+        user_id = claims.get("sub")
+        if user_id:
+            try:
+                db_user = db.get(User, user_id)
+                if db_user and db_user.is_active:
+                    user_role = db_user.role or claims.get("role", "user")
+                    is_admin = (user_role == "admin")
+                    return AuthenticatedPrincipal(
+                        user_id=db_user.id,
+                        username=db_user.username,
+                        display_name=db_user.display_name or db_user.username,
+                        email=db_user.email,
+                        role=user_role,
+                        roles=["admin", "user"] if is_admin else [user_role],
+                        authorized_scopes={"*"} if is_admin else {db_user.id},
+                    )
+            except Exception:
+                pass
+            # Fall back to token claims if DB transiently unreachable
+            role = claims.get("role", "user")
+            is_admin = (role == "admin")
+            return AuthenticatedPrincipal(
+                user_id=user_id,
+                username=claims.get("username", user_id),
+                display_name=claims.get("display_name", user_id),
+                email=claims.get("email"),
+                role=role,
+                roles=["admin", "user"] if is_admin else [role],
+                authorized_scopes={"*"} if is_admin else {user_id},
+            )
+
+    # 2. Check for system admin key or dev admin token
+    if token == settings.api_auth_secret or token in ("admin-secret-dev", "dev-admin-token"):
         return AuthenticatedPrincipal(
             user_id="admin_system",
             username="admin",
             display_name="System Administrator",
+            email="admin@cognitivetwin.ai",
+            role="admin",
             roles=["admin", "user"],
             authorized_scopes={"*"},
         )
 
-    # 2. Check for synthetic dev tokens (e.g. dev-token-synthetic_user_00 or user:synthetic_user_01)
+    # 3. Check for synthetic dev tokens (e.g. dev-token-synthetic_user_00, dev-synthetic-00, dev-synthetic-01)
     if token.startswith("user:"):
         uid = token.split("user:", 1)[1]
         return AuthenticatedPrincipal(
             user_id=uid,
             username=uid,
             display_name=f"Synthetic User ({uid})",
+            role="user",
             roles=["user"],
             authorized_scopes={uid},
         )
@@ -130,19 +178,32 @@ def get_current_user(
             user_id=uid,
             username=uid,
             display_name=f"Synthetic User ({uid})",
+            role="user",
             roles=["user"],
             authorized_scopes={uid},
         )
-    if token in ("dev-synthetic-00", "test_token_user_0"):
+    if token.startswith("dev-synthetic-"):
+        suffix = token.split("dev-synthetic-", 1)[1]
+        uid = f"synthetic_user_{suffix}"
+        return AuthenticatedPrincipal(
+            user_id=uid,
+            username=uid,
+            display_name=f"Synthetic User {suffix}",
+            role="user",
+            roles=["user"],
+            authorized_scopes={uid},
+        )
+    if token == "test_token_user_0":
         return AuthenticatedPrincipal(
             user_id="synthetic_user_00",
             username="synthetic_user_00",
             display_name="Synthetic User 00",
+            role="user",
             roles=["user"],
             authorized_scopes={"synthetic_user_00"},
         )
 
-    # 3. Check database for registered user with matching API key hash
+    # 4. Check database for registered user with matching API key hash
     try:
         key_hash = hash_api_key(token)
         db_user = db.execute(
@@ -150,12 +211,16 @@ def get_current_user(
         ).scalar_one_or_none()
 
         if db_user is not None:
+            user_role = db_user.role or "user"
+            is_admin = (user_role == "admin")
             return AuthenticatedPrincipal(
                 user_id=db_user.id,
                 username=db_user.username,
                 display_name=db_user.display_name or db_user.username,
-                roles=["user"],
-                authorized_scopes={db_user.id},
+                email=db_user.email,
+                role=user_role,
+                roles=["admin", "user"] if is_admin else [user_role],
+                authorized_scopes={"*"} if is_admin else {db_user.id},
             )
     except Exception:
         # If DB is unavailable, fall through to reject invalid token
@@ -166,3 +231,15 @@ def get_current_user(
         detail="Invalid or unrecognized authentication credentials.",
         headers={"WWW-Authenticate": "Bearer"},
     )
+
+
+def require_admin(
+    current_user: AuthenticatedPrincipal = Depends(get_current_user),
+) -> AuthenticatedPrincipal:
+    """Dependency enforcing administrator-only access."""
+    if not current_user.has_role("admin"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Forbidden: Administrative privileges required to access this resource.",
+        )
+    return current_user

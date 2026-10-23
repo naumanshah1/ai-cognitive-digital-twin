@@ -8,7 +8,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api.routes import agent, health, history, users
+from app.api.routes import admin, agent, auth, health, history, users
 from app.api.schemas.errors import ErrorResponse
 from app.core.config import get_settings
 from app.db.session import get_engine, reset_engine
@@ -46,11 +46,13 @@ def create_application() -> FastAPI:
         CORSMiddleware,
         allow_origins=settings.api_allowed_origins,
         allow_credentials=True,
-        allow_methods=["GET", "POST", "OPTIONS"],
+        allow_methods=["*"],
         allow_headers=["*"],
     )
 
     # Register API routers
+    app.include_router(auth.router)
+    app.include_router(admin.router)
     app.include_router(health.router)
     app.include_router(agent.router)
     app.include_router(users.router)

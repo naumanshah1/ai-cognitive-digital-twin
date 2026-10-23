@@ -30,10 +30,13 @@ def get_my_profile(
             select(User).where(User.id == current_user.user_id)
         ).scalar_one_or_none()
         if user_row:
+            user_role = user_row.role or current_user.role
             return UserProfile(
                 id=user_row.id,
                 username=user_row.username,
+                email=user_row.email or current_user.email,
                 display_name=user_row.display_name,
+                role=user_role,
                 is_active=user_row.is_active,
                 created_at=user_row.created_at,
                 roles=current_user.roles,
@@ -46,7 +49,9 @@ def get_my_profile(
     return UserProfile(
         id=current_user.user_id,
         username=current_user.username,
+        email=current_user.email,
         display_name=current_user.display_name,
+        role=current_user.role,
         is_active=True,
         created_at=now,
         roles=current_user.roles,

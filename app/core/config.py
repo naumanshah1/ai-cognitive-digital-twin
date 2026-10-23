@@ -1,8 +1,10 @@
 
+import json
 import os
 from functools import lru_cache
-from typing import Optional
+from typing import Any, Optional
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -20,8 +22,26 @@ class Settings(BaseSettings):
 
     # API & Security Configuration
     api_auth_secret: str = "dev-secret-key-change-in-production"
-    api_allowed_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+    api_allowed_origins: list[str] = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
     api_rate_limit_per_minute: int = 60
+
+    @field_validator("api_allowed_origins", mode="before")
+    @classmethod
+    def parse_allowed_origins(cls, v: Any) -> list[str]:
+        if isinstance(v, str):
+            v = v.strip()
+            if v.startswith("[") and v.endswith("]"):
+                try:
+                    return json.loads(v)
+                except Exception:
+                    pass
+            return [origin.strip() for origin in v.split(",") if origin.strip()]
+        return v
 
     # LLM & Agentic AI Configuration
     llm_provider: str = "gemini"

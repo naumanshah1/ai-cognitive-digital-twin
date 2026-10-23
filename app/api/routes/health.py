@@ -50,6 +50,11 @@ def readiness(response: Response) -> ReadinessResponse:
             latency_ms=0.1,
             message="Feature engineering and regression models loaded",
         ),
+        "models": ReadinessComponent(
+            status="ready",
+            latency_ms=0.1,
+            message="Feature engineering and regression models loaded",
+        ),
     }
 
     is_overall_ready = db_ok

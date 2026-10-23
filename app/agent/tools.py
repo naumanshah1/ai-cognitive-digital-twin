@@ -109,10 +109,32 @@ class ToolExecutionContext:
         cls._instance = None
 
 
+def _resolve_user_id(df: pd.DataFrame, user_id: str) -> str:
+    """Resolve user_id gracefully to handle formats like synthetic_user_00, user_00, synthetic_0001."""
+    if user_id in df["user_id"].values:
+        return user_id
+    import re
+    match = re.search(r"(\d+)", user_id)
+    if match:
+        num = int(match.group(1))
+        candidates = [
+            f"synthetic_{num + 1:04d}",
+            f"synthetic_{num:04d}",
+            f"synthetic_{num:02d}",
+            f"user_{num:02d}",
+            f"synthetic_user_{num:02d}",
+        ]
+        for cand in candidates:
+            if cand in df["user_id"].values:
+                return cand
+    return user_id
+
+
 def get_behavioral_summary(user_id: str, days: int = 14) -> Dict[str, Any]:
     """Retrieve statistical behavioral summary for a synthetic user over recent days."""
     ctx = ToolExecutionContext.get_instance()
-    user_rows = ctx.df_eng[ctx.df_eng["user_id"] == user_id].sort_values("record_date")
+    resolved_id = _resolve_user_id(ctx.df_eng, user_id)
+    user_rows = ctx.df_eng[ctx.df_eng["user_id"] == resolved_id].sort_values("record_date")
     if user_rows.empty:
         return {
             "user_id": user_id,
@@ -150,7 +172,8 @@ def get_behavioral_summary(user_id: str, days: int = 14) -> Dict[str, Any]:
 def detect_behavioral_drift(user_id: str, ref_window: int = 14, cmp_window: int = 7) -> Dict[str, Any]:
     """Evaluate longitudinal behavioral drift across features for a user using FDR control."""
     ctx = ToolExecutionContext.get_instance()
-    user_rows = ctx.df_raw[ctx.df_raw["user_id"] == user_id].sort_values("record_date")
+    resolved_id = _resolve_user_id(ctx.df_raw, user_id)
+    user_rows = ctx.df_raw[ctx.df_raw["user_id"] == resolved_id].sort_values("record_date")
     if user_rows.empty:
         return {"user_id": user_id, "error": f"No telemetry records found for user {user_id}."}
 
@@ -187,7 +210,8 @@ def detect_behavioral_drift(user_id: str, ref_window: int = 14, cmp_window: int 
 def generate_recommendations(user_id: str) -> Dict[str, Any]:
     """Generate prioritized, evidence-based behavioral recommendations for a user."""
     ctx = ToolExecutionContext.get_instance()
-    user_rows = ctx.df_raw[ctx.df_raw["user_id"] == user_id].sort_values("record_date")
+    resolved_id = _resolve_user_id(ctx.df_raw, user_id)
+    user_rows = ctx.df_raw[ctx.df_raw["user_id"] == resolved_id].sort_values("record_date")
     if user_rows.empty:
         return {"user_id": user_id, "error": f"No telemetry records found for user {user_id}."}
 
@@ -238,7 +262,8 @@ def run_what_if_simulation(
 ) -> Dict[str, Any]:
     """Execute counterfactual what-if simulation for a user under explicit feature changes."""
     ctx = ToolExecutionContext.get_instance()
-    user_rows = ctx.df_eng[ctx.df_eng["user_id"] == user_id].sort_values("record_date")
+    resolved_id = _resolve_user_id(ctx.df_eng, user_id)
+    user_rows = ctx.df_eng[ctx.df_eng["user_id"] == resolved_id].sort_values("record_date")
     if user_rows.empty:
         return {"user_id": user_id, "error": f"No telemetry records found for user {user_id}."}
 
@@ -287,7 +312,8 @@ def run_what_if_simulation(
 def predict_productivity(user_id: str, task_type: str = "retrospective") -> Dict[str, Any]:
     """Generate baseline productivity prediction (retrospective estimation or prospective forecast)."""
     ctx = ToolExecutionContext.get_instance()
-    user_rows = ctx.df_eng[ctx.df_eng["user_id"] == user_id].sort_values("record_date")
+    resolved_id = _resolve_user_id(ctx.df_eng, user_id)
+    user_rows = ctx.df_eng[ctx.df_eng["user_id"] == resolved_id].sort_values("record_date")
     if user_rows.empty:
         return {"user_id": user_id, "error": f"No telemetry records found for user {user_id}."}
 

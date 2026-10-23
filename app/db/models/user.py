@@ -20,8 +20,17 @@ class User(Base):
     username: Mapped[str] = mapped_column(
         String(64), unique=True, index=True, nullable=False
     )
+    email: Mapped[Optional[str]] = mapped_column(
+        String(255), unique=True, index=True, nullable=True
+    )
     display_name: Mapped[str] = mapped_column(
         String(128), nullable=False, default=""
+    )
+    hashed_password: Mapped[Optional[str]] = mapped_column(
+        String(255), nullable=True
+    )
+    role: Mapped[str] = mapped_column(
+        String(32), default="user", nullable=False
     )
     api_key_hash: Mapped[Optional[str]] = mapped_column(
         String(128), nullable=True, index=True
